@@ -30,21 +30,27 @@ async function playCommand(sock, chatId, message) {
         });
 
         const { data } = await axios.get(
-            `https://eliteprotech-apis.zone.id/youtdl?url=${encodeURIComponent(video.url)}&type=mp3`
+            `https://eliteprotech-apis.zone.id/ytfast?url=${encodeURIComponent(video.url)}&format=mp3`
         );
 
-        if (!data?.status || !data?.result) {
+        if (!data?.status || !data?.dl_url) {
             return await sock.sendMessage(chatId, {
                 text: "*Failed to get audio download link.*"
+            });
+        }
+
+        if (data.title || video.title) {
+            await sock.sendMessage(chatId, {
+                text: `🎵 *${data.title || video.title}*`
             });
         }
 
         await sock.sendMessage(
             chatId,
             {
-                audio: { url: data.result },
+                audio: { url: data.dl_url },
                 mimetype: "audio/mpeg",
-                fileName: `${video.title}.mp3`,
+                fileName: `${(data.title || video.title).replace(/[^\w\s]/gi, '')}.mp3`,
                 ptt: false
             },
             { quoted: message }
