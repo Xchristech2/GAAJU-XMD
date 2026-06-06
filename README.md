@@ -1,5 +1,5 @@
 <p align="center">
-<img src="YOUR_BANNER_IMAGE_LINK" width="100%">
+<img src="https://o.uguu.se/CrQCelwU.jpg" width="100%">
 </p><h1 align="center">🚀 GAAJU-XMD 🚀</h1><p align="center">
 <img src="https://img.shields.io/badge/BEST-MULTI_DEVICE_BOT-cyan?style=for-the-badge">
 <img src="https://img.shields.io/badge/GAAJU--XMD-black?style=for-the-badge&logo=whatsapp&logoColor=cyan">
