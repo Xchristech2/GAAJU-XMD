@@ -19,6 +19,7 @@ A Powerful Multi-Device WhatsApp Bot Built For Speed, Stability & Simplicity.
 ## 🔐 SESSION ID
 
 <p align="center">
+
 <a href="https://gaaju-ultra-pair-ljtv.onrender.com">
 <img src="https://img.shields.io/badge/GET_PAIR_CODE-cyan?style=for-the-badge&logo=whatsapp&logoColor=black">
 </a>
@@ -26,6 +27,7 @@ A Powerful Multi-Device WhatsApp Bot Built For Speed, Stability & Simplicity.
 <a href="https://gaaju-ultra-pair-ljtv.onrender.com">
 <img src="https://img.shields.io/badge/SCAN_QR_CODE-black?style=for-the-badge&logo=qrcode&logoColor=cyan">
 </a>
+
 </p>
 
 ---
@@ -54,54 +56,50 @@ A Powerful Multi-Device WhatsApp Bot Built For Speed, Stability & Simplicity.
 <img src="https://img.shields.io/badge/DEPLOY_TO_REPLIT-black?style=for-the-badge&logo=replit&logoColor=cyan">
 </a>
 
-<a href="https://github.com/features/codespaces">
-<img src="https://img.shields.io/badge/DEPLOY_TO_CODESPACES-cyan?style=for-the-badge&logo=github&logoColor=black">
-</a>
-
 <a href="https://glitch.com/">
-<img src="https://img.shields.io/badge/DEPLOY_TO_GLITCH-black?style=for-the-badge&logo=glitch&logoColor=cyan">
+<img src="https://img.shields.io/badge/DEPLOY_TO_GLITCH-cyan?style=for-the-badge&logo=glitch&logoColor=black">
 </a>
 
 <a href="https://vercel.com/">
-<img src="https://img.shields.io/badge/DEPLOY_TO_VERCEL-cyan?style=for-the-badge&logo=vercel&logoColor=black">
+<img src="https://img.shields.io/badge/DEPLOY_TO_VERCEL-black?style=for-the-badge&logo=vercel&logoColor=cyan">
 </a>
 
 <a href="https://netlify.com/">
-<img src="https://img.shields.io/badge/DEPLOY_TO_NETLIFY-black?style=for-the-badge&logo=netlify&logoColor=cyan">
+<img src="https://img.shields.io/badge/DEPLOY_TO_NETLIFY-cyan?style=for-the-badge&logo=netlify&logoColor=black">
 </a>
 
 </p>
 
 ---
 
-## 🎛️ DEPLOY TO PANELS
+## 🎛️ DEPLOY TO BOT PANELS
 
 <p align="center">
+
+<a href="https://katabump.com">
+<img src="https://img.shields.io/badge/KATABUMP_PANEL-black?style=for-the-badge&logo=server&logoColor=cyan">
+</a>
+
+<a href="https://bot-hosting.net">
+<img src="https://img.shields.io/badge/BOT_HOSTING_NET-cyan?style=for-the-badge&logo=cloud&logoColor=black">
+</a>
 
 <a href="https://pterodactyl.io">
 <img src="https://img.shields.io/badge/PTERODACTYL_PANEL-black?style=for-the-badge">
 </a>
 
-<a href="https://cpanel.net">
-<img src="https://img.shields.io/badge/CPANEL_HOSTING-cyan?style=for-the-badge">
-</a>
-
-<a href="https://www.hostinger.com">
-<img src="https://img.shields.io/badge/VPS_HOSTING-black?style=for-the-badge">
-</a>
-
 </p>
-
-> ⚠️ NOTE: Panel hosting links depend on your provider. Replace VPS/CPANEL with your real server URL.
 
 ---
 
 ## 📺 DEPLOYMENT VIDEO
 
 <p align="center">
+
 <a href="https://youtube.com">
 <img src="https://img.shields.io/badge/WATCH_DEPLOYMENT_VIDEO-red?style=for-the-badge&logo=youtube&logoColor=white">
 </a>
+
 </p>
 
 ---
@@ -133,7 +131,6 @@ A Powerful Multi-Device WhatsApp Bot Built For Speed, Stability & Simplicity.
 - Anime Features
 - Game System
 - Auto Features
-- Media Tools
 - Logo Maker
 
 ---
