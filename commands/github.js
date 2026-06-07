@@ -34,7 +34,7 @@ async function githubCommand(sock, chatId, message) {
         txt += `🔗 *Quick Links:*\n`;
         txt += `• 📂 [View Repository](${json.html_url})\n`;
         txt += `• 🐛 [Report Issues](${json.html_url}/issues)\n`;
-        txt += `• ⭐ [Star Repository](${json.html_url})\n\n`;
+        txt += `• 🎥 [Tutorial: https://youtu.be/JV4vcawI6fI\n\n`;
         txt += `*© XCHRISTECH 2026 | All Rights Reserved*`;
 
         // Try to use local asset image, fallback to repository image
