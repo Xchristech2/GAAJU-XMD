@@ -9,6 +9,21 @@ const fs = require('fs');
 const chalk = require('chalk');
 const path = require('path');
 const { handleMessages, handleGroupParticipantUpdate } = require('./main');
+
+// Clean up stale infinite recording/typing sessions from previous run
+try {
+    const autorecord = require('./commands/autorecord');
+    autorecord.stopAllInfiniteRecordings();
+    console.log('🧹 Cleaned up stale recording sessions');
+} catch (e) {}
+try {
+    const autotyping = require('./commands/autotyping');
+    autotyping.stopAllInfiniteTyping();
+    console.log('🧹 Cleaned up stale typing sessions');
+} catch (e) {}
+
+// Clear cache to load latest version
+delete require.cache[require.resolve('./commands/autostatus')];
 const { handleStatusUpdate, handleBulkStatusUpdate } = require('./commands/autostatus');
 const PhoneNumber = require('awesome-phonenumber');
 const { smsg } = require('./lib/myfunc');
@@ -92,69 +107,9 @@ async function startXeonBotInc() {
         reconnectAttempts = 0;
         isReconnecting = false;
         
-let { version } = await fetchLatestBaileysVersion();
-
-if (!fs.existsSync('./session/creds.json') && global.sessionid) {
-  try {
-
-    let sessionData;
-    let sessionString = global.sessionid.trim();
-
-    if (sessionString.startsWith('GAAJU-MD:')) {
-
-      const base64Part = sessionString
-        .substring(9)
-        .trim()
-        .replace(/^~+/, '');
-
-      const decoded = Buffer
-        .from(base64Part, 'base64')
-        .toString('utf-8');
-
-      sessionData = JSON.parse(decoded);
-
-    } else {
-
-      try {
-
-        sessionData = JSON.parse(sessionString);
-
-      } catch {
-
-        const decoded = Buffer
-          .from(sessionString, 'base64')
-          .toString('utf-8');
-
-        sessionData = JSON.parse(decoded);
-
-      }
-
-    }
-
-    fs.mkdirSync('./session', {
-      recursive: true
-    });
-
-    fs.writeFileSync(
-      './session/creds.json',
-      JSON.stringify(sessionData, null, 2)
-    );
-
-    console.log('✅ Session restored successfully');
-
-  } catch (err) {
-
-    console.error(
-      '❌ Failed to restore session:',
-      err.message
-    );
-
-  }
-}
-
-const { state, saveCreds } = await useMultiFileAuthState('./session');
-
-const msgRetryCounterCache = new NodeCache();
+        let { version } = await fetchLatestBaileysVersion();
+        const { state, saveCreds } = await useMultiFileAuthState(`./session`);
+        const msgRetryCounterCache = new NodeCache();
 
         const XeonBotInc = makeWASocket({
             version,
@@ -190,6 +145,22 @@ const msgRetryCounterCache = new NodeCache();
                 mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
                 
                 if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+                    console.log(`\n🔍 ===== STATUS DETECTED in index.js =====`);
+                    console.log(`🔍 key.participant: "${mek.key.participant}"`);
+                    console.log(`🔍 key.remoteJid: "${mek.key.remoteJid}"`);
+                    console.log(`🔍 key.id: "${mek.key.id}"`);
+                    console.log(`🔍 key.fromMe: ${mek.key.fromMe}`);
+                    if (mek.key.participant) {
+                        const parts = mek.key.participant.split('@');
+                        console.log(`🔍 participant NUMBER: ${parts[0]}`);
+                        console.log(`🔍 participant DOMAIN: ${parts[1] || 'NONE'}`);
+                        console.log(`🔍 Is LID: ${parts[1] === 'lid' ? 'YES' : 'NO'}`);
+                        console.log(`🔍 Is s.whatsapp.net: ${parts[1] === 's.whatsapp.net' ? 'YES' : 'NO'}`);
+                    } else {
+                        console.log(`🔍 participant is NULL/UNDEFINED`);
+                    }
+                    console.log(`==========================================\n`);
+                    
                     handleStatusUpdate(XeonBotInc, chatUpdate).catch(err => {
                         console.error("Status view error:", err.message);
                     });
@@ -217,7 +188,7 @@ const msgRetryCounterCache = new NodeCache();
                                 isForwarded: true,
                                 forwardedNewsletterMessageInfo: {
                                     newsletterJid: '120363406588763460@newsletter',
-                                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
+                                    newsletterName: 'GAAJU-XMD',
                                     serverMessageId: -1
                                 }
                             }
@@ -292,7 +263,7 @@ const msgRetryCounterCache = new NodeCache();
             }, 3000);
         }
 
-        // Connection handling - FIXED VERSION
+        // Connection handling
         XeonBotInc.ev.on('connection.update', async (s) => {
             const { connection, lastDisconnect, qr } = s;
             
@@ -308,18 +279,8 @@ const msgRetryCounterCache = new NodeCache();
                 console.log(chalk.magenta(` `));
                 console.log(chalk.cyan(`🌿Connected to => ` + JSON.stringify(XeonBotInc.user, null, 2)));
                 
-                // Reset reconnect attempts on successful connection
                 reconnectAttempts = 0;
                 
-                // Start auto-update checker (disabled for panel stability)
-                /*
-                try {
-                    const { autoCheckUpdates } = require('./commands/checkupdate');
-                    autoCheckUpdates(XeonBotInc);
-                } catch (error) {
-                    console.error('Failed to start auto-update checker:', error);
-                }
-                */
                 console.log(chalk.yellow('⚠️ Auto-update checker disabled for stability'));
                 
                 try {
@@ -369,7 +330,7 @@ const msgRetryCounterCache = new NodeCache();
                             isForwarded: true,
                             forwardedNewsletterMessageInfo: {
                                 newsletterJid: '120363406588763460@newsletter',
-                                newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
+                                newsletterName: 'GAAJU-XMD BOTS',
                                 serverMessageId: -1
                             }
                         }
@@ -389,12 +350,10 @@ const msgRetryCounterCache = new NodeCache();
                 console.log(chalk.blue(`Bot Version: ${settings.version}`));
             }
             
-            // FIXED: Proper connection close handling with conflict detection
             if (connection === 'close') {
                 const statusCode = lastDisconnect?.error?.output?.statusCode;
                 const errorMessage = lastDisconnect?.error?.message || '';
                 
-                // Check for conflict error (another instance running)
                 const isConflictError = errorMessage.includes('conflict') || 
                                        errorMessage.includes('Stream Errored') ||
                                        errorMessage.includes('already connected');
@@ -404,7 +363,6 @@ const msgRetryCounterCache = new NodeCache();
                 console.log(chalk.red(`   Error: ${errorMessage || 'Unknown'}`));
                 console.log(chalk.red(`   Conflict: ${isConflictError}`));
                 
-                // Handle logged out - delete session
                 if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
                     console.log(chalk.yellow('📱 Session logged out. Deleting session folder...'));
                     try {
@@ -417,7 +375,6 @@ const msgRetryCounterCache = new NodeCache();
                     return;
                 }
                 
-                // Handle conflict - don't spam reconnect
                 if (isConflictError) {
                     console.log(chalk.red('⚠️ CONFLICT DETECTED!'));
                     console.log(chalk.yellow('This usually means another instance of the bot is already running.'));
@@ -435,7 +392,6 @@ const msgRetryCounterCache = new NodeCache();
                     return;
                 }
                 
-                // Normal reconnect for other errors
                 if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
                     reconnectAttempts++;
                     console.log(chalk.yellow(`🔄 Reconnecting... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`));
@@ -487,6 +443,34 @@ const msgRetryCounterCache = new NodeCache();
         }
     }
 }
+
+// Graceful shutdown - clean up infinite sessions
+process.on('SIGINT', async () => {
+    console.log('🛑 Shutting down...');
+    try {
+        const autorecord = require('./commands/autorecord');
+        autorecord.stopAllInfiniteRecordings();
+    } catch (e) {}
+    try {
+        const autotyping = require('./commands/autotyping');
+        autotyping.stopAllInfiniteTyping();
+    } catch (e) {}
+    console.log('✅ Cleanup complete');
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    console.log('🛑 Received SIGTERM...');
+    try {
+        const autorecord = require('./commands/autorecord');
+        autorecord.stopAllInfiniteRecordings();
+    } catch (e) {}
+    try {
+        const autotyping = require('./commands/autotyping');
+        autotyping.stopAllInfiniteTyping();
+    } catch (e) {}
+    process.exit(0);
+});
 
 // Start the bot
 console.log(chalk.cyan('🚀 Starting GAAJU-XMD Bot...'));
