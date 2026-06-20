@@ -24,7 +24,7 @@ async function tiktokCommand(sock, chatId, message) {
         });
 
         let videoUrl = null;
-        let caption = "*🎬 TikTok Video - Downloaded by GAAJU-XMD*";
+        let caption = "*🎬 TikTok Video - Downloaded by Gᴀᴀᴊᴜ-Xᴍᴅ*";
 
         // API 1: TikWM (most reliable)
         try {
@@ -35,7 +35,7 @@ async function tiktokCommand(sock, chatId, message) {
             if (res1.data?.data?.play) {
                 videoUrl = res1.data.data.play;
                 if (res1.data.data.title) {
-                    caption = `*🎬 ${res1.data.data.title}*\n\n*Downloaded by GAAJU-XMD*`;
+                    caption = `*🎬 ${res1.data.data.title}*\n\n*Downloaded by Gᴀᴀᴊᴜ-Xᴍᴅ*`;
                 }
                 console.log('✅ TikWM success');
             }
