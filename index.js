@@ -359,7 +359,7 @@ const msgRetryCounterCache = new NodeCache();
 ╚═══════════════════╝
 
 *🔗 Channel:* ${global.channelLink}
-*💬 Support:* https://chat.whatsapp.com/K1CZsGzSk6t8Rw4t81fHEI?mode=hqrt1
+*💬 Support:* https://chat.whatsapp.com/HgGLuDF6ZNABneNTbdrtUQ?mode=hqrt1
 *📺 YouTube:* https://youtube.com/@Xchristech
 *💻 GitHub:* https://github.com/Xchristech2 
 
