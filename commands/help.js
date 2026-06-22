@@ -186,23 +186,32 @@ async function helpCommand(sock, chatId, message) {
 
 *${greeting.greeting}! Here's your menu:*
 
-╭━━━━━━━ 🌐 GAAJU-XMD MENU 🌐 ━━━━━━━╮
-
-⟿ User: @${userName}
-➤ Bot: ${settings.botName || 'GAAJU-XMD'}
-⟿ Owner: ${settings.botOwner || 'Chris Gaaju'}
-➤ Channel: ${global.ytch}
-⟿ Prefix: ${prefix}
-➤ Version: ${stats.version || settings.version || '1.0.0'}
-⟿ Mode: ${currentBotMode}
-➤ Commands: ${totalCommands}
-⟿ Active Users: ${stats.activeUsers}
-➤ Total Users: ${stats.totalUsers}
-⟿ Date: ${getLocalizedTime()}
-➤ Time: ${greeting.time}
-
-╰━━━━━━━━━━━━━━━━━━━━━━╯
-
+╔❖🔹 *GAAJU-XMD MENU* 🔹❖
+║
+║   *👤 User: [ @${userName} ]*
+║   *🤖 BotName: [ ${settings.botName || 'GAAJU-XMD'} ]*  
+║   *🧠 Version: [ ${stats.version || settings.version || '1.0.0'} ]*
+║   *👑 BotOwner: [ ${settings.botOwner || 'Chris Gaaju'} ]*
+║   *📺 YT Channel: [ ${global.ytch} ]*
+║   *📞 OwnerNumber: [ ${settings.ownerNumber} ]*
+║   *📥 Prefix: [ ${prefix} ]*
+║   *🎨 Menu Font: [ ${fontId} ]*
+║   *🎬 Menu Media: [ ${menuType} & AUDIO ]*
+║   *🌍 TimeZone: [ ${settings.timezone} ]*
+║   *⏰ Current Time: [ ${greeting.time} ]*
+║   *${dayInfo.emoji} Day: [ ${dayInfo.day} ]*
+║   *💻 Bot Mode: [ ${currentBotMode} ]*
+║   *📊 Total Commands: [ ${totalCommands} ]*
+║   *📅 Date: [ ${getLocalizedTime()} ]*
+║   *📡 Your Platform: [ ${userPlatform} ]*
+║   *👥 Active Users Now: [ ${stats.activeUsers} ]*
+║   *📊 Total Users All Time: [ ${stats.totalUsers} ]*
+${userUsageInfo}
+║   *🌐 Users by Platform:*
+${platformStatsText}
+║   *📡 Tracking: Local Storage ✅*
+║
+╚═══════════════════╝
 Powered by Chris Gaaju
 
 *⬇️ ALL COMMANDS ⬇️*
