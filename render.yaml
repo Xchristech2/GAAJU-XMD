@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: wallyjaytech-md
+    name: gaaju-xmd
     env: node
     plan: free
     buildCommand: npm install
