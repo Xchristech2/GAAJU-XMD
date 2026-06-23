@@ -167,7 +167,7 @@ function buildMenu(styleId, data) {
         for (const cmd of cmds) menu += s.bul + cmd + '\n';
     }
     menu += s.bot + '\n\n';
-    menu += `    🟡 *Copyright wallyjaytech 2025* 🟡\n\n`;
+    menu += `    🟡 *Copyright Chris Gaaju 2026* 🟡\n\n`;
     menu += `*📊 Total Commands: ${totalCommands}*\n\n`;
     menu += `*📊 Local Stats: ${stats.activeUsers} active now, ${stats.totalUsers} total users*\n\n`;
     menu += `*${greeting.emoji} ${greeting.greeting}, @${userName}! ${greeting.message}*\n\n`;
