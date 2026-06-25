@@ -1,3 +1,39 @@
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//                                                                                                                                                                                        //
+//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2026                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//* 
+//  * project_name : GAAJU-XMD
+//  * author : gaajutech
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
+//*
+//*
+//re-upload? recode? copy code? give credit to Chris Gaaju 2026:)
+//Instagram: gaajutech
+//Telegram: t.me/Official_ChrisGaaju
+//GitHub: Xchristech2
+//WhatsApp: +2348069675806
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: gaajutech.
+//   * Credit To Chris Gaaju 
+//   * © 2026 GAAJU-XMD.
+// ⛥┌┤
+// */
 // 🧹 Fix for ENOSPC / temp overflow in hosted panels
 const fs = require('fs');
 const path = require('path');
@@ -9,7 +45,24 @@ if (!fs.existsSync(customTemp)) fs.mkdirSync(customTemp, { recursive: true });
 process.env.TMPDIR = customTemp;
 process.env.TEMP = customTemp;
 process.env.TMP = customTemp;
-
+// Auto-create missing data files
+(function() {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    
+    const defaultFiles = {
+        'messageCount.json': { isPublic: true },
+        'banned.json': []
+    };
+    
+    for (const [file, content] of Object.entries(defaultFiles)) {
+        const filePath = path.join(dataDir, file);
+        if (!fs.existsSync(filePath)) {
+            fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+            console.log(`📁 Auto-created: ${file}`);
+        }
+    }
+})();
 // Auto-cleaner every 3 hours
 setInterval(() => {
   fs.readdir(customTemp, (err, files) => {
@@ -237,7 +290,7 @@ const channelInfo = {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363406588763460@newsletter',
-            newsletterName: 'GAAJU-XMD',
+            newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
             serverMessageId: -1
         }
     }
@@ -264,15 +317,38 @@ if (!isGroup && !message.key.fromMe) {
     
 }
         // Store message for antidelete feature
-        if (message.message) {
-            storeMessage(sock, message);
+if (message.message) {
+    storeMessage(sock, message);
+}
+
+// Cache LID → real phone mapping for antiforeign
+if (!isGroup && message.key.remoteJid?.endsWith('@lid')) {
+    console.log('🔍 LID KEY:', JSON.stringify(message.key));
+    try {
+        const store = require('./lib/lightweight_store');
+        const realJid = message.key.participant || 
+                        message.participant ||
+                        message.verifiedBizAcc ||
+                        null;
+        if (realJid?.includes('@s.whatsapp.net')) {
+            store.contacts[message.key.remoteJid] = { id: realJid };
+            console.log(`📌 Cached LID: ${message.key.remoteJid} → ${realJid}`);
         }
+    } catch (e) {}
+}
+
 // Handle autoreact for ALL messages
 await handleAutoreact(sock, message);
-        // Handle message revocation
-        if (message.message?.protocolMessage?.type === 0) {
+
+// Handle antiforeign blocking on ALL private messages
+if (!isGroup && !message.key.fromMe) {
+    const wasBlocked = await handleAntiforeign(sock, chatId, message);
+    if (wasBlocked) return;
+} 
+        // Handle message/status revocation
+        if (message.message?.protocolMessage) {
             await handleMessageRevocation(sock, message);
-            return;
+            if (message.message?.protocolMessage?.type === 0) return;
         }
 
  
@@ -302,7 +378,7 @@ await handleAutoreact(sock, message);
             }
         }
 
-        const rawMessageText = (
+                const rawMessageText = (
     message.message?.conversation?.trim() ||
     message.message?.extendedTextMessage?.text?.trim() ||
     message.message?.imageMessage?.caption?.trim() ||
@@ -310,6 +386,35 @@ await handleAutoreact(sock, message);
     message.message?.buttonsResponseMessage?.selectedButtonId?.trim() ||
     ''
 );
+// ✅ Even smarter: Check if the command file exists and handle quoted messages
+if (isCommand && message.message?.extendedTextMessage?.contextInfo?.quotedMessage) {
+    const cmdName = userMessage.split(' ')[0].replace(/^\./, '');
+    try {
+        const commandFile = require(`./commands/${cmdName}`);
+        if (commandFile && commandFile.requiresQuoted) {
+            // This command requires a quoted message
+            try {
+                const quotedId = message.message.extendedTextMessage.contextInfo.stanzaId;
+                const quotedMsg = await sock.loadMessage(message.key.remoteJid, quotedId);
+                
+                if (!quotedMsg) {
+                    await sock.sendMessage(chatId, { 
+                        text: '❌ The quoted message has expired or was deleted. Please quote a newer message.' 
+                    });
+                    return;
+                }
+            } catch (error) {
+                console.error('❌ Error checking quoted message:', error);
+                await sock.sendMessage(chatId, { 
+                    text: '❌ Could not access quoted message. Please try again with a newer message.' 
+                });
+                return;
+            }
+        }
+    } catch (error) {
+        // Command file doesn't exist, skip check
+    }
+}
 
 // Get current prefix
 delete require.cache[require.resolve('./settings')];
@@ -343,11 +448,11 @@ if (!isCommand) {
         // Check for links BEFORE anything else
         if (isGroup) await Antilink(message, sock);
         
-        // Show typing indicator for non-command messages
-        await handleAutotypingForMessage(sock, chatId, rawMessageText);
+        // ✅ RECORDING FIRST (swap this)
+        await handleAutorecordForMessage(sock, chatId, rawMessageText, message);
         
-        // Show recording indicator for non-command messages
-        await handleAutorecordForMessage(sock, chatId, rawMessageText);
+        // ✅ TYPING SECOND (swap this)
+        await handleAutotypingForMessage(sock, chatId, rawMessageText, message);
         
         // Other non-command handlers
         if (isGroup) {
@@ -365,11 +470,7 @@ const rawText = commandWithoutPrefix;
 // Only log command usage
 console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${commandWithoutPrefix} (prefix: ${currentPrefix || 'none'})`);
      
-     // Handle antiforeign blocking (check before processing messages)
-if (!isGroup && !message.key.fromMe) {
-    const wasBlocked = await handleAntiforeign(sock, chatId, message);
-    if (wasBlocked) return; // Stop processing if blocked
-}
+     
         // Only log command usage
         if (userMessage.startsWith('.')) {
             console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${userMessage}`);
@@ -435,7 +536,7 @@ if (!isGroup && !message.key.fromMe && !senderIsSudo) {
 // Then check for command prefix
 if (!userMessage.startsWith('.')) {
     // Show recording indicator if autorecord is enabled
-    await handleAutorecordForMessage(sock, chatId, userMessage);
+    await handleAutorecordForMessage(sock, chatId, userMessage, message);
 
     if (isGroup) {
         // Always run moderation features (antitag) regardless of mode
@@ -597,13 +698,20 @@ if (!isPublic && !isOwnerOrSudoCheck) {
     }
     // Read current data first
     let data;
-    try {
+try {
+    if (!fs.existsSync('./data/messageCount.json')) {
+        data = { isPublic: true };
+        const dir = './data';
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync('./data/messageCount.json', JSON.stringify(data, null, 2));
+    } else {
         data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
-    } catch (error) {
-        console.error('Error reading access mode:', error);
-        await sock.sendMessage(chatId, { text: '❌ Failed to read bot mode status' }, { quoted: message });
-        return;
     }
+} catch (error) {
+    console.error('Error reading access mode:', error);
+    data = { isPublic: true };
+    try { fs.writeFileSync('./data/messageCount.json', JSON.stringify(data, null, 2)); } catch (e) {}
+}
 
     const action = userMessage.split(' ')[1]?.toLowerCase();
 
@@ -636,7 +744,7 @@ if (!isPublic && !isOwnerOrSudoCheck) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
                     serverMessageId: -1
                 }
             }
@@ -658,7 +766,7 @@ if (!isPublic && !isOwnerOrSudoCheck) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
                     serverMessageId: -1
                 }
             }
@@ -676,7 +784,7 @@ if (!isPublic && !isOwnerOrSudoCheck) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
                     serverMessageId: -1
                 }
             }
@@ -708,7 +816,7 @@ if (!isPublic && !isOwnerOrSudoCheck) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
                     serverMessageId: -1
                 }
             }
@@ -722,7 +830,7 @@ if (!isPublic && !isOwnerOrSudoCheck) {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
                     serverMessageId: -1
                 }
             }
