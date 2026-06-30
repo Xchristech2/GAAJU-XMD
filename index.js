@@ -27,11 +27,11 @@
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
 //GitHub: Xchristech2
-//WhatsApp: +2348144317152
+//WhatsApp: +2348069675806
 //want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
 //   * Created By Github: gaajutechh.
 //   * Credit To Chris Gaaju
-//   * © 2025 GAAJU-MD.
+//   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
 
