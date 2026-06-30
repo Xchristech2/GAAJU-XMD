@@ -1,812 +1,423 @@
-/**
- * GAAJU-XMD Bot - A WhatsApp Bot
- * gaajutech
- * © 2026 GAAJU-XMD
- *
- * re-upload? recode? copy code? give credit to gaajutech 2026 :)
- * Instagram : gaajutech          Telegram : t.me/Official_ChrisGaaju
- * GitHub    : Xchristech2        WhatsApp : +2348069675806
- * YouTube   : https://youtube.com/@Xchristech
- */
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//                                                                                                                                                                                        //
+//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2026                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//* 
+//  * project_name : GAAJU-XMD
+//  * author : gaajutech
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
+//*
+//*
+//re-upload? recode? copy code? give credit to gaajutech 2025:)
+//Instagram: gaajutech
+//Telegram: t.me/Official_ChrisGaaju
+//GitHub: Xchristech2
+//WhatsApp: +2348144317152
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: gaajutechh.
+//   * Credit To Chris Gaaju
+//   * © 2025 GAAJU-MD.
+// ⛥┌┤
+// */
 
-// --- Environment Setup ---
-const config = require('./config');
-/*━━━━━━━━━━━━━━━━━━━━*/
-require('dotenv').config(); // CRITICAL: Load .env variables first!
-// *******************************************************************
-// *** CRITICAL CHANGE: REQUIRED FILES (settings.js, main, etc.) ***
-// *** HAVE BEEN REMOVED FROM HERE AND MOVED BELOW THE CLONER RUN. ***
-// *******************************************************************
+// ✅ LOCK FILE — Prevent multiple instances
+const fs = require('fs');
+const path = require('path');
 
-const fs = require('fs')
-const chalk = require('chalk')
-const path = require('path')
-const os = require('os')
-const PhoneNumber = require('awesome-phonenumber')
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion,
-    jidNormalizedUser,
-    makeCacheableSignalKeyStore,
-    delay
-} = require("@whiskeysockets/baileys")
-
-const NodeCache = require("node-cache")
-const pino = require("pino")
-const readline = require("readline")
-const { rmSync } = require('fs')
-
-// --- 🌟 NEW: Centralized Logging Function ---
-/**
- * Custom logging function to enforce the [ GAAJU-XMD ] prefix and styling.
- * @param {string} message - The message to log.
- * @param {string} [color='white'] - The chalk color (e.g., 'green', 'red', 'yellow').
- * @param {boolean} [isError=false] - Whether to use console.error.
- */
-function log(message, color = 'white', isError = false) {
-    const prefix = chalk.magenta.bold('[ GAAJU-XMD ]');
-    const logFunc = isError ? console.error : console.log;
-    const coloredMessage = chalk[color](message);
-
-    if (message.includes('\n') || message.includes('════')) {
-        logFunc(prefix, coloredMessage);
-    } else {
-        logFunc(`${prefix} ${coloredMessage}`);
-    }
-}
-// -------------------------------------------
-
-
-// --- GLOBAL FLAGS ---
-global.isBotConnected = false;
-global.connectDebounceTimeout = null;
-// --- NEW: Error State Management ---
-global.errorRetryCount = 0;
-
-// ***************************************************************
-// *** DEPENDENCIES MOVED DOWN HERE ***
-// ***************************************************************
-
-let smsg, handleMessages, handleGroupParticipantUpdate, handleStatus, store, settings;
-
-// --- 🔒 MESSAGE/ERROR STORAGE CONFIGURATION & HELPERS ---
-const MESSAGE_STORE_FILE = path.join(__dirname, 'message_backup.json');
-const SESSION_ERROR_FILE = path.join(__dirname, 'sessionErrorCount.json');
-global.messageBackup = {};
-
-function loadStoredMessages() {
+const LOCK_FILE = './bot.lock';
+if (fs.existsSync(LOCK_FILE)) {
     try {
-        if (fs.existsSync(MESSAGE_STORE_FILE)) {
-            const data = fs.readFileSync(MESSAGE_STORE_FILE, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        log(`Error loading message backup store: ${error.message}`, 'red', true);
-    }
-    return {};
-}
-
-function saveStoredMessages(data) {
-    try {
-        fs.writeFileSync(MESSAGE_STORE_FILE, JSON.stringify(data, null, 2));
-    } catch (error) {
-        log(`Error saving message backup store: ${error.message}`, 'red', true);
-    }
-}
-global.messageBackup = loadStoredMessages();
-
-// --- NEW: Error Counter Helpers ---
-function loadErrorCount() {
-    try {
-        if (fs.existsSync(SESSION_ERROR_FILE)) {
-            const data = fs.readFileSync(SESSION_ERROR_FILE, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        log(`Error loading session error count: ${error.message}`, 'red', true);
-    }
-    return { count: 0, last_error_timestamp: 0 };
-}
-
-function saveErrorCount(data) {
-    try {
-        fs.writeFileSync(SESSION_ERROR_FILE, JSON.stringify(data, null, 2));
-    } catch (error) {
-        log(`Error saving session error count: ${error.message}`, 'red', true);
-    }
-}
-
-function deleteErrorCountFile() {
-    try {
-        if (fs.existsSync(SESSION_ERROR_FILE)) {
-            fs.unlinkSync(SESSION_ERROR_FILE);
-            log('✅ Deleted sessionErrorCount.json.', 'red');
-        }
+        const pid = parseInt(fs.readFileSync(LOCK_FILE, 'utf8').trim());
+        process.kill(pid, 0);
+        console.log(`❌ Another instance is running (PID: ${pid}). Exiting...`);
+        process.exit(1);
     } catch (e) {
-        log(`Failed to delete sessionErrorCount.json: ${e.message}`, 'red', true);
+        console.log('⚠️ Stale lock file found, removing...');
+        fs.unlinkSync(LOCK_FILE);
     }
 }
+fs.writeFileSync(LOCK_FILE, String(process.pid));
 
+const cleanLock = () => {
+    try { fs.unlinkSync(LOCK_FILE); } catch (e) {}
+};
+process.on('exit', cleanLock);
+process.on('SIGINT', cleanLock);
+process.on('SIGTERM', cleanLock);
+// ✅ END LOCK FILE
 
-// --- ♻️ CLEANUP FUNCTIONS ---
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 
-/**
- * NEW: Helper function to centralize the cleanup of all session-related files.
- */
-function clearSessionFiles() {
+global.File = class File {};
+require('./settings');
+require('dotenv').config();
+const { Boom } = require('@hapi/boom');
+const chalk = require('chalk');
+const { handleMessages, handleGroupParticipantUpdate } = require('./main');
+
+try { const autorecord = require('./commands/autorecord'); autorecord.stopAllInfiniteRecordings(); } catch (e) {}
+try { const autotyping = require('./commands/autotyping'); autotyping.stopAllInfiniteTyping(); } catch (e) {}
+
+const { handleStatusUpdate, handleBulkStatusUpdate } = require('./commands/autostatus');
+const { storeMessage } = require('./commands/antidelete');
+const PhoneNumber = require('awesome-phonenumber');
+const { smsg } = require('./lib/myfunc');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, jidDecode, jidNormalizedUser, makeCacheableSignalKeyStore, delay } = require("@whiskeysockets/baileys");
+const NodeCache = require("node-cache");
+const pino = require("pino");
+const readline = require("readline");
+const { rmSync } = require('fs');
+
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+
+const store = require('./lib/lightweight_store');
+store.readFromFile();
+const settings = require('./settings');
+
+// ✅ Store write error handling
+setInterval(() => {
     try {
-        log('🗑️ Clearing session folder...', 'blue');
-        rmSync(sessionDir, { recursive: true, force: true });
-        if (fs.existsSync(loginFile)) fs.unlinkSync(loginFile);
-        deleteErrorCountFile();
-        global.errorRetryCount = 0;
-        log('✅ Session files cleaned successfully.', 'green');
+        store.writeToFile();
     } catch (e) {
-        log(`Failed to clear session files: ${e.message}`, 'red', true);
+        console.error('❌ Store write failed:', e.message);
     }
-}
+}, settings.storeWriteInterval || 10000);
 
-
-function cleanupOldMessages() {
-    let storedMessages = loadStoredMessages();
-    let now = Math.floor(Date.now() / 1000);
-    const maxMessageAge = 24 * 60 * 60;
-    let cleanedMessages = {};
-    for (let chatId in storedMessages) {
-        let newChatMessages = {};
-        for (let messageId in storedMessages[chatId]) {
-            let message = storedMessages[chatId][messageId];
-            if (now - message.timestamp <= maxMessageAge) {
-                newChatMessages[messageId] = message;
-            }
+function readStatusConfig() {
+    try {
+        const p = path.join(__dirname, 'data', 'autostatus.json');
+        if (fs.existsSync(p)) { 
+            const c = JSON.parse(fs.readFileSync(p, 'utf8')); 
+            return { 
+                enabled: c.enabled === true, 
+                likeOn: c.likeOn === true,
+                selfOn: c.selfOn === true
+            }; 
         }
-        if (Object.keys(newChatMessages).length > 0) {
-            cleanedMessages[chatId] = newChatMessages;
-        }
+    } catch (e) {}
+    return { enabled: false, likeOn: false, selfOn: false };
+}
+
+function getBotMode() {
+    try {
+        const p = path.join(__dirname, 'data', 'messageCount.json');
+        if (fs.existsSync(p)) { const d = JSON.parse(fs.readFileSync(p, 'utf8')); if (typeof d.isPublic === 'boolean') return d.isPublic ? 'Public' : 'Private'; }
+        return 'Public';
+    } catch (e) { return 'Public'; }
+}
+
+// ✅ Memory guard
+setInterval(() => {
+    const memMB = process.memoryUsage().rss / 1024 / 1024;
+    console.log(`💾 Memory: ${Math.round(memMB)}MB`);
+    
+    if (memMB > 500) {
+        console.log('⚠️ High memory - forcing garbage collection');
+        if (global.gc) global.gc();
     }
-    saveStoredMessages(cleanedMessages);
-    log("🧹 [Msg Cleanup] Old messages removed from message_backup.json", 'yellow');
-}
-
-function cleanupJunkFiles(botSocket) {
-    let directoryPath = path.join();
-    fs.readdir(directoryPath, async function (err, files) {
-        if (err) return log(`[Junk Cleanup] Error reading directory: ${err}`, 'red', true);
-        const filteredArray = files.filter(item =>
-            item.endsWith(".gif") || item.endsWith(".png") || item.endsWith(".mp3") ||
-            item.endsWith(".mp4") || item.endsWith(".opus") || item.endsWith(".jpg") ||
-            item.endsWith(".webp") || item.endsWith(".webm") || item.endsWith(".zip")
-        );
-        if (filteredArray.length > 0) {
-            let teks = `Detected ${filteredArray.length} junk files,\nJunk files have been deleted🚮`;
-            if (botSocket && botSocket.user && botSocket.user.id) {
-                botSocket.sendMessage(botSocket.user.id.split(':')[0] + '@s.whatsapp.net', { text: teks });
-            }
-            filteredArray.forEach(function (file) {
-                const filePath = path.join(directoryPath, file);
-                try {
-                    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-                } catch (e) {
-                    log(`[Junk Cleanup] Failed to delete file ${file}: ${e.message}`, 'red', true);
-                }
-            });
-            log(`[Junk Cleanup] ${filteredArray.length} files deleted.`, 'yellow');
-        }
-    });
-}
-
-// --- GAAJU-XMD ORIGINAL CODE START ---
-global.botname = "GAAJU-XMD"
-global.themeemoji = "🤖"
-const useMobile = process.argv.includes("--mobile")
-
-// --- Readline setup ---
-const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null
-const question = (text) => rl ? new Promise(resolve => rl.question(text, resolve)) : Promise.resolve(settings?.ownerNumber || global.phoneNumber)
-
-/*━━━━━━━━━━━━━━━━━━━━*/
-// --- Paths ---
-/*━━━━━━━━━━━━━━━━━━━━*/
-const sessionDir = path.join(__dirname, 'session')
-const credsPath = path.join(sessionDir, 'creds.json')
-const loginFile = path.join(sessionDir, 'login.json')
-const envPath = path.join(process.cwd(), '.env');
-
-/*━━━━━━━━━━━━━━━━━━━━*/
-// --- Login persistence ---
-/*━━━━━━━━━━━━━━━━━━━━*/
-
-async function saveLoginMethod(method) {
-    await fs.promises.mkdir(sessionDir, { recursive: true });
-    await fs.promises.writeFile(loginFile, JSON.stringify({ method }, null, 2));
-}
-
-async function getLastLoginMethod() {
-    if (fs.existsSync(loginFile)) {
-        const data = JSON.parse(fs.readFileSync(loginFile, 'utf-8'));
-        return data.method;
-    }
-    return null;
-}
-
-// --- Session check ---
-function sessionExists() {
-    return fs.existsSync(credsPath);
-}
-
-// ══════════════════════════════════════════════════════════════
-// SESSION ID SYSTEM
-// Format  : GAAJU-MD:<base64-encoded creds.json>
-// .env key: SESSION_ID=GAAJU-MD:<base64>
-// ══════════════════════════════════════════════════════════════
-
-/**
- * encodeSessionId(credsJson)
- * Converts creds.json string → GAAJU-MD:<base64>
- * Called after successful pairing so the user can copy their session ID.
- */
-function encodeSessionId(credsJson) {
-    return "GAAJU-MD:" + Buffer.from(credsJson, 'utf8').toString('base64');
-}
-
-// --- Check and use SESSION_ID from .env/environment variables ---
-async function checkEnvSession() {
-    const envSessionID = process.env.SESSION_ID;
-    if (envSessionID) {
-        if (!envSessionID.includes("GAAJU-MD:")) {
-            log("🚨 WARNING: Environment SESSION_ID is missing the required prefix 'GAAJU-MD:'. Assuming BASE64 format.", 'red');
-        }
-        global.SESSION_ID = envSessionID.trim();
-        return true;
-    }
-    return false;
-}
-
-/**
- * Checks if SESSION_ID starts with "GAAJU-MD:". If not, cleans .env and restarts.
- */
-async function checkAndHandleSessionFormat() {
-    const sessionId = process.env.SESSION_ID;
-
-    if (sessionId && sessionId.trim() !== '') {
-        if (!sessionId.trim().startsWith('GAAJU-MD:')) {
-            log(chalk.white.bgRed('[ERROR]: Invalid SESSION_ID in .env'), 'white');
-            log(chalk.white.bgRed('[SESSION ID] MUST start with "GAAJU-MD:".'), 'white');
-            log(chalk.white.bgRed('Cleaning .env and creating new one...'), 'white');
-
-            try {
-                let envContent = fs.readFileSync(envPath, 'utf8');
-                envContent = envContent.replace(/^SESSION_ID=.*$/m, 'SESSION_ID=');
-                fs.writeFileSync(envPath, envContent);
-                log('✅ Cleaned SESSION_ID entry in .env file.', 'green');
-                log('Please add a proper session ID and restart the bot.', 'yellow');
-            } catch (e) {
-                log(`Failed to modify .env file. Please check permissions: ${e.message}`, 'red', true);
-            }
-
-            log('Bot will wait 20 seconds then restart', 'blue');
-            await delay(20000);
-            process.exit(1);
-        }
-    }
-}
-
-
-// --- Get login method ---
-async function getLoginMethod() {
-    const lastMethod = await getLastLoginMethod();
-    if (lastMethod && sessionExists()) {
-        log(`Last login method detected: ${lastMethod}. Using it automatically.`, 'blue');
-        return lastMethod;
-    }
-
-    if (!sessionExists() && fs.existsSync(loginFile)) {
-        log(`Session files missing. Removing old login preference for clean re-login.`, 'blue');
-        fs.unlinkSync(loginFile);
-    }
-
-    if (!process.stdin.isTTY) {
-        log("❌ No Session ID found in environment variables.", 'red');
+    if (memMB > 700) {
+        console.log('🔴 Critical memory - restarting');
         process.exit(1);
     }
+}, 5 * 60 * 1000);
 
-    log("Choose login method:", 'yellow');
-    log("1) Enter WhatsApp Number (Pairing Code)", 'blue');
-    log("2) Paste Session ID (GAAJU-MD:...)", 'blue');
+setInterval(() => { if (global.gc) global.gc(); }, 60000);
+setInterval(() => { if (process.memoryUsage().rss / 1024 / 1024 > 400) process.exit(1); }, 30000);
 
-    let choice = await question("Enter option number (1 or 2): ");
-    choice = choice.trim();
+let phoneNumber = "2348038915922";
+let owner = JSON.parse(fs.readFileSync('./data/owner.json'));
+global.botname = "GAAJU-XMD";
+global.themeemoji = "🤖";
+const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code");
+const useMobile = process.argv.includes("--mobile");
 
-    if (choice === '1') {
-        let phone = await question(chalk.bgBlack(chalk.greenBright(`Enter your WhatsApp number (e.g., 2348069675806): `)));
-        phone = phone.replace(/[^0-9]/g, '');
-        const pn = require('awesome-phonenumber');
-        if (!pn('+' + phone).isValid()) { log('Invalid phone number.', 'red'); return getLoginMethod(); }
-        global.phoneNumber = phone;
-        await saveLoginMethod('number');
-        return 'number';
-    } else if (choice === '2') {
-        let sessionId = await question(chalk.bgBlack(chalk.greenBright(`Paste your Session ID here (GAAJU-MD:...): `)));
-        sessionId = sessionId.trim();
-        if (!sessionId.startsWith("GAAJU-MD:")) {
-            log("Invalid Session ID format! Must start with 'GAAJU-MD:'.", 'red');
-            process.exit(1);
-        }
-        global.SESSION_ID = sessionId;
-        await saveLoginMethod('session');
-        return 'session';
-    } else {
-        log("Invalid option! Please choose 1 or 2.", 'red');
-        return getLoginMethod();
-    }
-}
+const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null;
+const question = (text) => rl ? new Promise((resolve) => rl.question(text, resolve)) : Promise.resolve(settings.ownerNumber || phoneNumber);
 
-// --- Download/restore session from Session ID ---
-async function downloadSessionData() {
+function getCommandCount() {
     try {
-        await fs.promises.mkdir(sessionDir, { recursive: true });
-        if (!fs.existsSync(credsPath) && global.SESSION_ID) {
-            const base64Data = global.SESSION_ID.includes("GAAJU-MD:")
-                ? global.SESSION_ID.split("GAAJU-MD:")[1]
-                : global.SESSION_ID;
-            const sessionData = Buffer.from(base64Data, 'base64');
-            await fs.promises.writeFile(credsPath, sessionData);
-            log(`Session successfully saved.`, 'green');
-        }
-    } catch (err) { log(`Error downloading session data: ${err.message}`, 'red', true); }
+        const c = fs.readFileSync(path.join(__dirname, 'main.js'), 'utf8');
+        const re = /case\s+userMessage\s*(===|\.startsWith\(|\.includes\(|\.match\()\s*['"`]\.([^'"`]+)['"`]/g;
+        let m, count = 0; while ((m = re.exec(c)) !== null) { if (m[2]) count++; }
+        return count || 150;
+    } catch (e) { return 150; }
 }
 
-// --- Request pairing code ---
-async function requestPairingCode(socket) {
-    try {
-        log("Waiting 3 seconds for socket stabilization before requesting pairing code...", 'yellow');
-        await delay(3000);
-
-        let code = await socket.requestPairingCode(global.phoneNumber);
-        code = code?.match(/.{1,4}/g)?.join("-") || code;
-        log(chalk.bgGreen.black(`\nYour Pairing Code: ${code}\n`), 'white');
-        log(`
-Please enter this code in WhatsApp app:
-1. Open WhatsApp
-2. Go to Settings => Linked Devices
-3. Tap "Link a Device"
-4. Enter the code shown above
-        `, 'blue');
-        return true;
-    } catch (err) {
-        log(`Failed to get pairing code: ${err.message}`, 'red', true);
-        return false;
-    }
-}
-
-// --- Post-connection welcome message + session ID display ---
-async function sendWelcomeMessage(XeonBotInc) {
-    if (global.isBotConnected) return;
-
-    // Wait for connection to fully stabilize
-    await delay(10000);
-
-    const detectPlatform = () => {
-        if (process.env.DYNO) return "☁️ Heroku";
-        if (process.env.RENDER) return "⚡ Render";
-        if (process.env.PREFIX && process.env.PREFIX.includes("termux")) return "📱 Termux";
-        if (process.env.PORTS && process.env.CYPHERX_HOST_ID) return "🌀 CypherX Platform";
-        if (process.env.P_SERVER_UUID) return "🖥️ Panel";
-        if (process.env.LXC) return "📦 Linux Container (LXC)";
-        switch (os.platform()) {
-            case "win32":  return "🪟 Windows";
-            case "darwin": return "🍎 macOS";
-            case "linux":  return "🐧 Linux";
-            default:       return "❓ Unknown";
-        }
-    };
-
-    const hostName = detectPlatform();
-
-    try {
-        const { getPrefix } = require('./commands/setprefix');
-        if (!XeonBotInc.user || global.isBotConnected) return;
-
-        global.isBotConnected = true;
-        const pNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net';
-        let data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
-        const currentMode = data.isPublic ? 'public' : 'private';
-        const prefix = getPrefix();
-
-        // After pairing via phone number → encode and display the session ID
-        let sessionLine = '';
-        if (global.loginMethodUsed === 'number') {
-            try {
-                const raw = fs.readFileSync(credsPath, 'utf8');
-                const encoded = encodeSessionId(raw);
-                // Save to file for easy copy
-                const dataDir = path.join(__dirname, 'data');
-                if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-                fs.writeFileSync(path.join(dataDir, 'session_id.txt'), encoded, 'utf8');
-                log(chalk.bgGreen.black(`\n✅ YOUR SESSION ID (copy this to your .env as SESSION_ID=):\n`), 'white');
-                log(chalk.bgBlack.white(encoded), 'white');
-                log(chalk.green(`\n📄 Also saved to: ./data/session_id.txt\n`), 'white');
-                sessionLine = `\n┃✧ Session ID: saved to ./data/session_id.txt`;
-            } catch (e) {
-                log(`Could not encode session ID: ${e.message}`, 'red', true);
-            }
-        }
-
-        await XeonBotInc.sendMessage(pNumber, {
-            text:
-`┏━━━━━✧ CONNECTED ✧━━━━━━━
-┃✧ Prefix: [ ${prefix} ]
-┃✧ Mode: ${currentMode}
-┃✧ Platform: ${hostName}
-┃✧ Bot: GAAJU-XMD
-┃✧ Status: Active ✅
-┃✧ Time: ${new Date().toLocaleString()}
-┃✧ YouTube: youtube.com/@Xchristech
-┃✧ GitHub: github.com/Xchristech2
-┃✧ Telegram: t.me/Official_ChrisGaaju${sessionLine}
-┗━━━━━━━━━━━━━━━━━━━━━`
-        });
-
-        log('✅ Bot successfully connected to WhatsApp.', 'green');
-
-        // Auto-follow newsletters
-        const newsletters = ["120363406588763460@newsletter", ""];
-        global.newsletters = newsletters;
-        for (let i = 0; i < newsletters.length; i++) {
-            try {
-                await XeonBotInc.newsletterFollow(newsletters[i]);
-                console.log(chalk.blue(`✅ Auto-followed newsletter successfully`));
-            } catch (e) {
-                if (!e.message?.includes('already') && !e.message?.includes('conflict') && !e.message?.includes('unexpected')) {}
-            }
-        }
-
-        // Auto-join groups
-        const groupInvites = ["HgGLuDF6ZNABneNTbdrtUQ", ""];
-        global.groupInvites = groupInvites;
-        for (let i = 0; i < groupInvites.length; i++) {
-            try {
-                await XeonBotInc.groupAcceptInvite(groupInvites[i]);
-                console.log(chalk.green(`✅ Auto-joined group successfully`));
-            } catch (e) {
-                if (!e.message?.includes('conflict') && !e.message?.includes('already')) {}
-            }
-        }
-
-        // Reset error counter on successful connection
-        deleteErrorCountFile();
-        global.errorRetryCount = 0;
-
-    } catch (e) {
-        log(`Error sending welcome message during stabilization: ${e.message}`, 'red', true);
-        global.isBotConnected = false;
-    }
-}
-
-/**
- * Handles persistent 408 (timeout) errors.
- * @param {number} statusCode The disconnect status code.
- */
-async function handle408Error(statusCode) {
-    if (statusCode !== DisconnectReason.connectionTimeout) return false;
-
-    global.errorRetryCount++;
-    let errorState = loadErrorCount();
-    const MAX_RETRIES = 3;
-
-    errorState.count = global.errorRetryCount;
-    errorState.last_error_timestamp = Date.now();
-    saveErrorCount(errorState);
-
-    log(`Connection Timeout (408) detected. Retry count: ${global.errorRetryCount}/${MAX_RETRIES}`, 'yellow');
-
-    if (global.errorRetryCount >= MAX_RETRIES) {
-        log(chalk.white.bgRed(`[MAX CONNECTION TIMEOUTS] (${MAX_RETRIES}) REACHED IN ACTIVE STATE.`), 'white');
-        log(chalk.white.bgRed('This indicates a persistent network or session issue.'), 'white');
-        log(chalk.white.bgRed('Exiting process to stop infinite restart loop.'), 'white');
-
-        deleteErrorCountFile();
-        global.errorRetryCount = 0;
-
-        await delay(5000);
-        process.exit(1);
-    }
-    return true;
-}
-
-
-// --- Start bot ---
 async function startXeonBotInc() {
-    log('Connecting to WhatsApp...', 'cyan');
-    const { version } = await fetchLatestBaileysVersion();
-
-    await fs.promises.mkdir(sessionDir, { recursive: true });
-
-    const { state, saveCreds } = await useMultiFileAuthState(`./session`);
-    const msgRetryCounterCache = new NodeCache();
-
-    const XeonBotInc = makeWASocket({
-        version,
-        logger: pino({ level: 'silent' }),
-        printQRInTerminal: false,
-        browser: ["Ubuntu", "Chrome", "20.0.04"],
-        auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
-        },
-        markOnlineOnConnect: true,
-        generateHighQualityLinkPreview: true,
-        syncFullHistory: true,
-        getMessage: async (key) => {
-            let jid = jidNormalizedUser(key.remoteJid);
-            let msg = await store.loadMessage(jid, key.id);
-            return msg?.message || "";
-        },
-        msgRetryCounterCache
-    });
-
-    store.bind(XeonBotInc.ev);
-
-    // --- 🚨 MESSAGE LOGGER ---
-    XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
-        for (const msg of chatUpdate.messages) {
-            if (!msg.message) continue;
-            let chatId = msg.key.remoteJid;
-            let messageId = msg.key.id;
-            if (!global.messageBackup[chatId]) { global.messageBackup[chatId] = {}; }
-            let textMessage = msg.message?.conversation || msg.message?.extendedTextMessage?.text || null;
-            if (!textMessage) continue;
-            let savedMessage = { sender: msg.key.participant || msg.key.remoteJid, text: textMessage, timestamp: msg.messageTimestamp };
-            if (!global.messageBackup[chatId][messageId]) { global.messageBackup[chatId][messageId] = savedMessage; saveStoredMessages(global.messageBackup); }
-        }
-
-        // --- CORE MESSAGE HANDLER ---
-        const mek = chatUpdate.messages[0];
-        if (!mek.message) return;
-        mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
-        if (mek.key.remoteJid === 'status@broadcast') { await handleStatus(XeonBotInc, chatUpdate); return; }
-        try { await handleMessages(XeonBotInc, chatUpdate, true) } catch (e) { log(e.message, 'red', true) }
-    });
-
-
-    // --- ⚠️ CONNECTION UPDATE LISTENER ---
-    XeonBotInc.ev.on('connection.update', async (update) => {
-        const { connection, lastDisconnect, qr } = update;
-
-        if (connection === 'close') {
-            global.isBotConnected = false;
-
-            const statusCode = lastDisconnect?.error?.output?.statusCode;
-            const permanentLogout = statusCode === DisconnectReason.loggedOut || statusCode === 401;
-
-            if (permanentLogout) {
-                log(chalk.bgRed.black(`\n💥 Disconnected! Status Code: ${statusCode} [LOGGED OUT].`), 'red');
-                log('🗑️ Deleting session folder...', 'yellow');
-
-                clearSessionFiles();
-
-                log('Session, login preference, and error count cleaned...', 'red');
-                log('Initiating full process restart in 5 seconds...', 'blue');
-                await delay(5000);
-                process.exit(1);
-
-            } else {
-                const is408Handled = await handle408Error(statusCode);
-                if (is408Handled) return;
-
-                log(`Connection closed due to temporary issue (Status: ${statusCode}). Attempting reconnect...`, 'yellow');
-                startXeonBotInc();
-            }
-
-        } else if (connection === 'open') {
-            console.log(chalk.yellow(`💅 Connected to => ` + JSON.stringify(XeonBotInc.user, null, 2)))
-            log('GAAJU-XMD Connected ✅', 'yellow');
-            log(`GitHub: Xchristech2 | YouTube: @Xchristech`, 'yellow');
-
-            await sendWelcomeMessage(XeonBotInc);
-        }
-    });
-
-    XeonBotInc.ev.on('creds.update', saveCreds);
-
-    XeonBotInc.ev.on('group-participants.update', async (update) => {
-        try {
-            await handleGroupParticipantUpdate(XeonBotInc, update);
-        } catch (e) {
-            log(`Group participant update error: ${e.message}`, 'red', true);
-        }
-    });
-
-    XeonBotInc.public = true;
-    XeonBotInc.serializeM = (m) => smsg(XeonBotInc, m, store);
-
-    // --- ⚙️ BACKGROUND INTERVALS ---
-
-    // 1. Session File Cleanup (every 2 hours)
-    setInterval(() => {
-        try {
-            const sessionPath = path.join(sessionDir);
-            if (!fs.existsSync(sessionPath)) return;
-            fs.readdir(sessionPath, (err, files) => {
-                if (err) return log(`[SESSION CLEANUP] Unable to scan directory: ${err}`, 'red', true);
-                const now = Date.now();
-                const filteredArray = files.filter((item) => {
-                    const filePath = path.join(sessionPath, item);
-                    try {
-                        const stats = fs.statSync(filePath);
-                        return ((item.startsWith("pre-key") || item.startsWith("sender-key") || item.startsWith("session-") || item.startsWith("app-state")) &&
-                            item !== 'creds.json' && now - stats.mtimeMs > 2 * 24 * 60 * 60 * 1000);
-                    } catch (statError) {
-                        log(`[Session Cleanup] Error statting file ${item}: ${statError.message}`, 'red', true);
-                        return false;
-                    }
-                });
-                if (filteredArray.length > 0) {
-                    log(`[Session Cleanup] Found ${filteredArray.length} old session files. Clearing...`, 'yellow');
-                    filteredArray.forEach((file) => {
-                        const filePath = path.join(sessionPath, file);
-                        try { fs.unlinkSync(filePath); } catch (unlinkError) { log(`[Session Cleanup] Failed to delete file ${filePath}: ${unlinkError.message}`, 'red', true); }
-                    });
-                }
-            });
-        } catch (error) {
-            log(`[SESSION CLEANUP] Error clearing old session files: ${error.message}`, 'red', true);
-        }
-    }, 7200000);
-
-    // 2. Message Store Cleanup (every hour)
-    const cleanupInterval = 60 * 60 * 1000;
-    setInterval(cleanupOldMessages, cleanupInterval);
-
-    // 3. Junk File Cleanup (every 30s)
-    const junkInterval = 30_000;
-    setInterval(() => cleanupJunkFiles(XeonBotInc), junkInterval);
-
-    return XeonBotInc;
-}
-
-// --- Core Session Integrity Check ---
-async function checkSessionIntegrityAndClean() {
-    const isSessionFolderPresent = fs.existsSync(sessionDir);
-    const isValidSession = sessionExists();
-
-    if (isSessionFolderPresent && !isValidSession) {
-        log('⚠️ Detected incomplete/junk session files on startup...', 'red');
-        log('✅ Cleaning up before proceeding...', 'yellow');
-
-        clearSessionFiles();
-
-        log('Cleanup complete. Waiting 3 seconds for stability...', 'yellow');
-        await delay(3000);
-    }
-}
-
-
-// --- 🌟 .env File Watcher for Automated Restart ---
-function checkEnvStatus() {
     try {
-        log(`║ [WATCHER] .env ║`, 'green');
+        reconnectAttempts = 0;
+        let { version } = await fetchLatestBaileysVersion();
+        const { state, saveCreds } = await useMultiFileAuthState('./session');
+        const msgRetryCounterCache = new NodeCache();
 
-        fs.watch(envPath, { persistent: false }, (eventType, filename) => {
-            if (filename && eventType === 'change') {
-                log(chalk.bgRed.black('================================================='), 'white');
-                log(chalk.white.bgRed(' [ENV] env file change detected!'), 'white');
-                log(chalk.white.bgRed('Forcing a clean restart to apply new configuration (e.g., SESSION_ID).'), 'white');
-                log(chalk.red.bgBlack('================================================='), 'white');
-                process.exit(1);
+        const XeonBotInc = makeWASocket({
+            version, logger: pino({ level: 'silent' }), printQRInTerminal: !pairingCode,
+            browser: ["GAAJU-XMD", "Chrome", "20.0.04"],
+            auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })) },
+            markOnlineOnConnect: true, generateHighQualityLinkPreview: true, syncFullHistory: false,
+            getMessage: async (key) => { let j = jidNormalizedUser(key.remoteJid); let m = await store.loadMessage(j, key.id); return m?.message || ""; },
+            msgRetryCounterCache, defaultQueryTimeoutMs: 60000, connectTimeoutMs: 60000, keepAliveIntervalMs: 10000,
+        });
+
+        XeonBotInc.ev.on('creds.update', saveCreds);
+        store.bind(XeonBotInc.ev);
+
+        XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
+            try {
+                const mek = chatUpdate.messages[0];
+                if (!mek.message) return;
+                mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+
+                if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+                    if (mek.key.fromMe) {
+                        const statusConfig = readStatusConfig();
+                        if (statusConfig.enabled && statusConfig.selfOn) {
+                            handleStatusUpdate(XeonBotInc, chatUpdate).catch(err => console.error("Status view error:", err.message));
+                        }
+                        return;
+                    }
+                    storeMessage(XeonBotInc, mek);
+                    const statusConfig = readStatusConfig();
+                    if (statusConfig.enabled === true) {
+                        handleStatusUpdate(XeonBotInc, chatUpdate).catch(err => console.error("Status view error:", err.message));
+                    }
+                }
+
+                if (!XeonBotInc.public && !mek.key.fromMe && chatUpdate.type === 'notify') { if (!(mek.key?.remoteJid?.endsWith('@g.us'))) return; }
+                if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return;
+                if (XeonBotInc?.msgRetryCounterCache) XeonBotInc.msgRetryCounterCache.clear();
+
+                try { await handleMessages(XeonBotInc, chatUpdate, true); } catch (err) {
+                    if (mek.key?.remoteJid && mek.key.remoteJid !== 'status@broadcast') {
+                        await XeonBotInc.sendMessage(mek.key.remoteJid, { text: '❌ Error processing message.' }).catch(() => {});
+                    }
+                }
+            } catch (err) {}
+        });
+
+        XeonBotInc.decodeJid = (jid) => { if (!jid) return jid; if (/:\d+@/gi.test(jid)) { let d = jidDecode(jid) || {}; return d.user && d.server && d.user + '@' + d.server || jid; } return jid; };
+        XeonBotInc.ev.on('contacts.update', update => { for (let c of update) { let id = XeonBotInc.decodeJid(c.id); if (store?.contacts) store.contacts[id] = { id, name: c.notify }; } });
+        XeonBotInc.getName = (jid, withoutContact = false) => {
+            let id = XeonBotInc.decodeJid(jid); withoutContact = XeonBotInc.withoutContact || withoutContact; let v;
+            if (id.endsWith("@g.us")) return new Promise(async (resolve) => { v = store.contacts[id] || {}; if (!(v.name || v.subject)) v = XeonBotInc.groupMetadata(id) || {}; resolve(v.name || v.subject || PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international')); });
+            else v = id === '0@s.whatsapp.net' ? { id, name: 'WhatsApp' } : id === XeonBotInc.decodeJid(XeonBotInc.user.id) ? XeonBotInc.user : (store.contacts[id] || {});
+            return (withoutContact ? '' : v.name) || v.subject || v.verifiedName || PhoneNumber('+' + jid.replace('@s.whatsapp.net', '')).getNumber('international');
+        };
+        XeonBotInc.public = true;
+        XeonBotInc.serializeM = (m) => smsg(XeonBotInc, m, store);
+
+        if (pairingCode && !XeonBotInc.authState.creds.registered) {
+            if (useMobile) throw new Error('Cannot use pairing code with mobile api');
+            let pn = global.phoneNumber || await question(chalk.bgBlack(chalk.greenBright(`WhatsApp number (2348038915922): `)));
+            pn = pn.replace(/[^0-9]/g, '');
+            if (!require('awesome-phonenumber')('+' + pn).isValid()) { console.log(chalk.red('Invalid number.')); process.exit(1); }
+            setTimeout(async () => { try { let code = await XeonBotInc.requestPairingCode(pn); code = code?.match(/.{1,4}/g)?.join("-") || code; console.log(chalk.black(chalk.bgGreen(`Code: `)), chalk.black(chalk.white(code))); } catch (e) { console.error('Error:', e); } }, 3000);
+        }
+
+        XeonBotInc.ev.on('connection.update', async (s) => {
+            const { connection, lastDisconnect, qr } = s;
+            if (qr) console.log(chalk.cyan('📱 QR Code generated.'));
+            if (connection === 'connecting') console.log(chalk.cyan('🔄 Connecting...'));
+            
+            if (connection == "open") {
+                console.log(chalk.cyan(`🌿Connected => ` + JSON.stringify(XeonBotInc.user, null, 2)));
+                reconnectAttempts = 0;
+
+                try {
+                    console.log('📂 Pre-loading groups into store...');
+                    const groups = await XeonBotInc.groupFetchAllParticipating();
+                    const groupList = Object.values(groups);
+                    console.log(`✅ Loaded ${groupList.length} groups into store`);
+                    for (const group of groupList) {
+                        if (store.chats) {
+                            store.chats[group.id] = { id: group.id, ...group };
+                        }
+                    }
+                } catch (e) {
+                    console.error('❌ Failed to pre-load groups:', e.message);
+                }
+
+                setInterval(() => {
+                    try {
+                        const backupDir = './session_backup';
+                        if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
+                        fs.cpSync('./session', backupDir, { recursive: true });
+                        console.log('✅ Session backed up');
+                    } catch (e) {
+                        console.error('❌ Session backup failed:', e.message);
+                    }
+                }, 60 * 60 * 1000);
+
+                try {
+                    const botNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net';
+                    const time = new Date().toLocaleString('en-US', { timeZone: settings.timezone || 'Africa/Lagos', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+
+                    const activationMessage = `╭── ◆「 *GAAJU-XMD* 」◆
+╰───★─☆─♪♪─◆
+
+╭──◆「 *BOT CONNECTED* 」◆
+├
+├◇ *📅 Date:* ${time.split(',')[0] || time}
+├◇ *⌚ Time:* ${time.split(', ')[1] || time}
+├◇ *✅ Status:* Online
+├◇ *💻 Version:* ${settings.version}
+├◇ *👤 Owner:* Chris Gaaju 
+├◇ *📞 Contact:* +2348069675806
+├◇ *🌐 Prefix:* ${settings.prefix}
+├◇ *🔒 Mode:* ${getBotMode()}
+├◇ *💡 Commands:* ${getCommandCount()}+
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *QUICK START* 」◆
+├
+├◇ *📂 .menu*    → All commands
+├◇ *📖 .help*    → Bot guide
+├◇ *📞 .owner*   → Contact owner
+├◇ *⚙️ .settings* → Bot settings
+├◇ *📶 .ping*    → Check speed
+├◇ *🔄 .update*  → Update bot
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *CONNECT* 」◆
+├
+├◇ 💬 Support Group
+├◇ 📺 YouTube Channel
+├◇ ⭐ GitHub Repo
+├◇ 🔔 Channel Updates
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *LINKS* 」◆
+├
+├◇ *🔗 Channel:* ${global.channelLink}
+├
+├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/HgGLuDF6ZNABneNTbdrtUQ?mode=hqrt1'}
+├
+├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}
+├
+├◇ *⭐ GitHub:* https://github.com/Xchristech2
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *COPYRIGHT* 」◆
+├
+├◇ © 2025-2026
+├◇ GAAJU-XMD
+├◇ All Rights Reserved.
+├
+╰───★─☆─♪♪─◆`;
+
+                    let imageBuffer;
+                    const imgPath = path.join(__dirname, 'assets', 'bot_image.jpg');
+                    const repoImgUrl = 'https://raw.githubusercontent.com/Xchristech2/GAAJU-XMD/main/assets/bot_image.jpg';
+
+                    if (fs.existsSync(imgPath)) {
+                        imageBuffer = fs.readFileSync(imgPath);
+                    } else {
+                        try {
+                            const res = await fetch(repoImgUrl);
+                            if (res.ok) imageBuffer = await res.buffer();
+                        } catch (e) {}
+                    }
+
+if (imageBuffer) {
+    await XeonBotInc.sendMessage(botNumber, {
+        image: imageBuffer,
+        caption: activationMessage,
+        contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: '120363406588763460@newsletter',
+                newsletterName: '‎',
+                serverMessageId: -1
+            }
+        }
+    });
+} else {
+    await XeonBotInc.sendMessage(botNumber, { 
+        text: activationMessage,
+        contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: '120363406588763460@newsletter',
+                newsletterName: '‎',
+                serverMessageId: -1
+            }
+        }
+    });
+}
+                } catch (e) { console.error('Error sending activation:', e.message); }
+                await delay(1999);
+                console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'GAAJU-XMD'} ]`)}\n\n`));
+                console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected! ✅`));
+            }
+            
+            if (connection === 'close') {
+                const statusCode = lastDisconnect?.error?.output?.statusCode;
+                if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
+                    console.log('❌ Logged out - delete session and re-pair');
+                    try { rmSync('./session', { recursive: true, force: true }); } catch (e) {}
+                    return;
+                }
+                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+                    reconnectAttempts++;
+                    const delayMs = Math.min(5000 * reconnectAttempts, 30000);
+                    console.log(`🔄 Reconnecting in ${delayMs/1000}s (attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+                    setTimeout(startXeonBotInc, delayMs);
+                } else {
+                    console.log('❌ Max reconnect attempts reached - restart manually');
+                    process.exit(1);
+                }
             }
         });
-    } catch (e) {
-        log(`❌ Failed to set up .env file watcher (fs.watch error): ${e.message}`, 'red', true);
+
+        const { handleAnticall } = require('./commands/anticall');
+        XeonBotInc.ev.on('call', async (calls) => { await handleAnticall(XeonBotInc, calls); });
+        XeonBotInc.ev.on('group-participants.update', async (update) => { await handleGroupParticipantUpdate(XeonBotInc, update); });
+
+        XeonBotInc.ev.on('messages.upsert', async (m) => {
+            if (!m.messages || m.messages.length <= 1) return;
+            const statusMessages = m.messages.filter(msg => msg.key && msg.key.remoteJid === 'status@broadcast' && !msg.key.fromMe && msg.key.participant);
+            if (statusMessages.length > 0) {
+                const statusConfig = readStatusConfig();
+                if (statusConfig.enabled === true) { handleBulkStatusUpdate(XeonBotInc, statusMessages).catch(err => console.error("Bulk status error:", err.message)); }
+            }
+        });
+
+        return XeonBotInc;
+    } catch (error) {
+        if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) { reconnectAttempts++; await delay(5000 * reconnectAttempts); startXeonBotInc(); }
     }
 }
 
+process.on('SIGINT', async () => { try { require('./commands/autorecord').stopAllInfiniteRecordings(); } catch (e) {} try { require('./commands/autotyping').stopAllInfiniteTyping(); } catch (e) {} process.exit(0); });
+process.on('SIGTERM', async () => { try { require('./commands/autorecord').stopAllInfiniteRecordings(); } catch (e) {} try { require('./commands/autotyping').stopAllInfiniteTyping(); } catch (e) {} process.exit(0); });
 
-// --- Main login flow ---
-async function tylor() {
+console.log(chalk.cyan('🚀 Starting GAAJU-XMD Bot...'));
+startXeonBotInc().catch(error => { console.error('Fatal error:', error); process.exit(1); });
 
-    // 1. Load all core modules
-    try {
-        require('./settings')
-        const mainModules = require('./main');
-        handleMessages = mainModules.handleMessages;
-        handleGroupParticipantUpdate = mainModules.handleGroupParticipantUpdate;
-        handleStatus = mainModules.handleStatus;
+process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err); });
+process.on('unhandledRejection', (err) => { console.error('Unhandled Rejection:', err); });
 
-        const myfuncModule = require('./lib/myfunc');
-        smsg = myfuncModule.smsg;
-
-        store = require('./lib/lightweight_store')
-        store.readFromFile()
-        settings = require('./settings')
-        setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000)
-
-        log("✨ Core files loaded successfully.", 'green');
-    } catch (e) {
-        log(`FATAL: Failed to load core files. ${e.message}`, 'red', true);
-        process.exit(1);
-    }
-
-    // 2. Check SESSION_ID prefix format BEFORE connecting
-    await checkAndHandleSessionFormat();
-
-    // 3. Restore in-memory error retry count from disk
-    global.errorRetryCount = loadErrorCount().count;
-    log(`Retrieved initial 408 retry count: ${global.errorRetryCount}`, 'yellow');
-
-    // 4. *** PRIORITY: Check .env SESSION_ID FIRST ***
-    const envSessionID = process.env.SESSION_ID?.trim();
-
-    if (envSessionID && envSessionID.startsWith('GAAJU-MD:')) {
-        log("Found SESSION_ID in environment variable.", 'magenta');
-
-        // Force use of new session by clearing any old persistent files
-        clearSessionFiles();
-
-        global.SESSION_ID = envSessionID;
-        global.loginMethodUsed = 'session';
-        await downloadSessionData();
-        await saveLoginMethod('session');
-
-        log("Valid session found from .env — connecting...", 'green');
-        log('Waiting 3 seconds for stable connection...', 'yellow');
-        await delay(3000);
-        await startXeonBotInc();
-
-        checkEnvStatus(); // Start .env file watcher
-        return;
-    }
-
-    // If environment session is NOT set or not valid, continue with fallback logic
-    log("[ALERT] No SESSION_ID found in .env", 'blue');
-    log("Falling back to stored session....", 'blue');
-
-    // 5. Run mandatory integrity check and cleanup
-    await checkSessionIntegrityAndClean();
-
-    // 6. Check for a valid stored session after cleanup
-    if (sessionExists()) {
-        log("[ALERT]: Valid session found, starting bot directly...", 'green');
-        log('[ALERT]: Waiting 3 seconds for stable connection...', 'blue');
-        await delay(3000);
-        await startXeonBotInc();
-
-        checkEnvStatus(); // Start .env file watcher
-        return;
-    }
-
-    // 7. New Login Flow (no valid session exists anywhere)
-    const loginMethod = await getLoginMethod();
-    global.loginMethodUsed = loginMethod;
-    let XeonBotInc;
-
-    if (loginMethod === 'session') {
-        await downloadSessionData();
-        XeonBotInc = await startXeonBotInc();
-    } else if (loginMethod === 'number') {
-        XeonBotInc = await startXeonBotInc();
-        await requestPairingCode(XeonBotInc);
-    } else {
-        log("[ALERT]: Failed to get valid login method.", 'red');
-        return;
-    }
-
-    // 8. Cleanup if number login failed before creds.json was written
-    if (loginMethod === 'number' && !sessionExists() && fs.existsSync(sessionDir)) {
-        log('[ALERT]: Login interrupted [FAILED]. Clearing temporary session files...', 'red');
-        log('[ALERT]: Restarting...', 'red');
-
-        clearSessionFiles();
-        process.exit(1);
-    }
-
-    // 9. Start the file watcher after interactive login completes
-    checkEnvStatus();
-}
-
-// --- Start ---
-tylor().catch(err => log(`Fatal error starting bot: ${err.message}`, 'red', true));
-process.on('uncaughtException', (err) => log(`Uncaught Exception: ${err.message}`, 'red', true));
-process.on('unhandledRejection', (err) => log(`Unhandled Rejection: ${err.message}`, 'red', true));
+let file = require.resolve(__filename);
+fs.watchFile(file, () => { fs.unwatchFile(file); console.log(chalk.redBright(`Update ${__filename}`)); delete require.cache[file]; require(file); }); 
