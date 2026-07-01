@@ -1,6 +1,6 @@
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //                                                                                                                                                                                        //
-//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
 //                                                                                                                                                                                        //
 //                                                                  𝐕 : 1.0.0                                                                                                             //
 //                                                                                                                                                                                        //
@@ -12,7 +12,7 @@
 //                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
 //                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
 //                                                                                                                                                                                        //
-//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2026                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                                                        //
 //                                                                                                                                                                                        //
 //                                                                                                                                                                                        //
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
@@ -23,14 +23,14 @@
 //  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
 //*
 //*
-//re-upload? recode? copy code? give credit to gaajutech 2025:)
+//re-upload? recode? copy code? give credit to gaajutech 2026:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
-//GitHub: Xchristech2
+//GitHub: Xchristech2 
 //WhatsApp: +2348069675806
 //want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
-//   * Created By Github: gaajutechh.
-//   * Credit To Chris Gaaju
+//   * Created By Github: Xchristech2.
+//   * Credit To Chris Gaaju 
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
@@ -168,7 +168,7 @@ async function startXeonBotInc() {
 
         const XeonBotInc = makeWASocket({
             version, logger: pino({ level: 'silent' }), printQRInTerminal: !pairingCode,
-            browser: ["GAAJU-XMD", "Chrome", "20.0.04"],
+            browser: ["Android", "Chrome", "20.0.04"],
             auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })) },
             markOnlineOnConnect: true, generateHighQualityLinkPreview: true, syncFullHistory: false,
             getMessage: async (key) => { let j = jidNormalizedUser(key.remoteJid); let m = await store.loadMessage(j, key.id); return m?.message || ""; },
@@ -313,7 +313,7 @@ async function startXeonBotInc() {
 ├
 ├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}
 ├
-├◇ *⭐ GitHub:* https://github.com/Xchristech2
+├◇ *⭐ GitHub:* https://github.com/Xchristech2 
 ├
 ╰─┬─★─☆─♪♪─◆
 
