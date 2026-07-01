@@ -1,35 +1,35 @@
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
-//                                                                                                                                                            //
-//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                         //
-//                                                                                                                                                            //
-//                                                                  𝐕 : 1.0.0                                                                                 //
-//                                                                                                                                                            //
-//                                                                                                                                                            //
-//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                 //
-//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗              //
-//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║               //
-//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║               //
-//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝              //
-//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                 //
-//                                                                                                                                                            //
-//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                            //
-//                                                                                                                                                            //
-//                                                                                                                                                            //
+//                                                                                                                                                                                        //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //* 
-//  * project_name : GAAJU-XMD
+//  * project_name : GAAJU-MD
 //  * author : gaajutech
-//  * youtube : https://www.youtube.com/Xchristech2
+//  * youtube : https://www.youtube.com/Xchristech 
 //  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
 //*
 //*
 //re-upload? recode? copy code? give credit to gaajutech 2026:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
-//GitHub: Xchristech2 
+//GitHub: Xchristech2
 //WhatsApp: +2348069675806
-//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech2
-//   * Created By Github: Gaajutech.
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: Xchristech2.
 //   * Credit To Chris Gaaju 
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
@@ -131,29 +131,25 @@ async function generateCommand(sock, chatId, message) {
 
         await sock.sendMessage(chatId, { react: { text: '🎨', key: message.key } });
 
-        const loadingMsg = await sock.sendMessage(chatId, { 
-            text: `Generating prompt ${BAR_FRAMES[0]}` 
-        });
-
+        // Start progress bar + image generation at same time
+        const loadingMsg = await sock.sendMessage(chatId, { text: `Generating prompt ${BAR_FRAMES[0]}` });
         const imagePromise = generateImage(prompt, style);
 
+        // Play animation
         for (let frame = 1; frame < BAR_FRAMES.length; frame++) {
             await new Promise(resolve => setTimeout(resolve, 2000));
             try {
-                await sock.sendMessage(chatId, {
-                    edit: loadingMsg.key,
-                    text: `Generating prompt ${BAR_FRAMES[frame]}`
-                });
+                await sock.sendMessage(chatId, { edit: loadingMsg.key, text: `Generating prompt ${BAR_FRAMES[frame]}` });
             } catch (e) {}
         }
 
+        // Wait for image
         const imageBuffer = await imagePromise;
 
-        await sock.sendMessage(chatId, {
-            edit: loadingMsg.key,
-            text: `Generating done ${BAR_FRAMES[10]}`
-        });
+        // Done
+        await sock.sendMessage(chatId, { edit: loadingMsg.key, text: `Generating done ${BAR_FRAMES[10]}` });
 
+        // Send result
         await sock.sendMessage(chatId, {
             image: imageBuffer,
             caption: `╭──◆「 *IMAGE GENERATED* 」◆\n` +
@@ -168,8 +164,7 @@ async function generateCommand(sock, chatId, message) {
         }, { quoted: message });
 
     } catch (error) {
-        console.error('❌ Generate error');
-
+        console.error('Generate error');
         await sendMsg(sock, chatId,
             `╭──◆「 *GENERATION FAILED* 」◆\n` +
             `├\n` +
