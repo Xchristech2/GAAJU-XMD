@@ -1,6 +1,6 @@
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //                                                                                                                                                                                        //
-//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
 //                                                                                                                                                                                        //
 //                                                                  𝐕 : 1.0.0                                                                                                             //
 //                                                                                                                                                                                        //
@@ -17,16 +17,16 @@
 //                                                                                                                                                                                        //
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //* 
-//  * project_name : GAAJU-MD
+//  * project_name : GAAJU-XMD
 //  * author : gaajutech
-//  * youtube : https://www.youtube.com/Zchristech 
+//  * youtube : https://www.youtube.com/Xchristech 
 //  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
 //*
 //*
 //re-upload? recode? copy code? give credit to gaajutech 2026:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
-//GitHub: Xchristech2
+//GitHub: Xchristech2 
 //WhatsApp: +2348069675806
 //want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
 //   * Created By Github: Xchristech2.
@@ -34,13 +34,6 @@
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
-
-/**
- * GAAJU-XMD - Gemini AI Command (.gemini)
- * Powered by Google Gemini via GAAJU Proxy
- * Features: Reply support | WhatsApp formatting fix | Loading animation
- * Professional Version
- */
 
 const fetch = require('node-fetch');
 
@@ -76,38 +69,47 @@ function wrapText(text, maxLen = 30) {
 
 function fixFormattingPerLine(text) {
     const lines = text.split('\n');
-    return lines.map(line => {
-        // Fix italic: ensure _ pairs on same line
-        const italicMatches = line.match(/(?<!\w)_(?!\w)/g);
-        if (italicMatches && italicMatches.length % 2 !== 0) {
-            line += '_';
+    const fixed = [];
+
+    for (const line of lines) {
+        let l = line;
+
+        const boldMatches = l.match(/\*/g);
+        if (boldMatches && boldMatches.length % 2 !== 0) l += '*';
+
+        const italicMatches = l.match(/(?<!\w)_(?!\w)/g);
+        if (italicMatches && italicMatches.length % 2 !== 0) l += '_';
+
+        const strikeMatches = l.match(/~/g);
+        if (strikeMatches && strikeMatches.length % 2 !== 0) l += '~';
+
+        const codeMatches = l.match(/```/g);
+        if (codeMatches && codeMatches.length % 2 !== 0) l += '```';
+
+        if (l.length > 35 && (l.includes('*') || l.includes('_'))) {
+            const splitPoint = l.lastIndexOf(' ', 35);
+            if (splitPoint > 10) {
+                fixed.push(l.substring(0, splitPoint).trim());
+                fixed.push(l.substring(splitPoint + 1).trim());
+                continue;
+            }
         }
 
-        // Fix strikethrough: ensure ~ pairs on same line
-        const strikeMatches = line.match(/~/g);
-        if (strikeMatches && strikeMatches.length % 2 !== 0) {
-            line += '~';
-        }
+        fixed.push(l);
+    }
 
-        // Fix code: ensure ``` pairs on same line
-        const codeMatches = line.match(/```/g);
-        if (codeMatches && codeMatches.length % 2 !== 0) {
-            line += '```';
-        }
-
-        return line;
-    }).join('\n');
+    return fixed.join('\n');
 }
 
 async function geminiCommand(sock, chatId, message) {
     let loadingMsg;
+    let interval;
 
     try {
         const text = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
         const args = text.split(' ').slice(1);
         let query = args.join(' ').trim();
 
-        // Check if replying to a quoted message
         const quotedMessage = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
         let quotedText = '';
 
@@ -118,7 +120,6 @@ async function geminiCommand(sock, chatId, message) {
                         quotedMessage.videoMessage?.caption || '';
         }
 
-        // Build final prompt
         if (quotedText && query) {
             query = `Regarding this: "${quotedText}"\n\n${query}`;
         } else if (quotedText) {
@@ -152,7 +153,7 @@ async function geminiCommand(sock, chatId, message) {
         loadingMsg = await sock.sendMessage(chatId, { text: LOADING_FRAMES[0] });
         let frame = 0;
 
-        const interval = setInterval(async () => {
+        interval = setInterval(async () => {
             try {
                 if (frame < LOADING_FRAMES.length - 1) {
                     frame++;
@@ -174,7 +175,9 @@ async function geminiCommand(sock, chatId, message) {
 
         if (!answer) throw new Error('NO_RESPONSE');
 
-        // Fix formatting per line (close unclosed _ ~ ```)
+        answer = answer.replace(/\n---\n/g, '\n\n');
+        answer = answer.replace(/\n[-_]{3,}\n/g, '\n\n');
+        answer = answer.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
         answer = fixFormattingPerLine(answer);
 
         const rawLines = answer.split('\n');
@@ -202,6 +205,11 @@ async function geminiCommand(sock, chatId, message) {
 
     } catch (error) {
         console.error('Gemini error');
+
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
 
         if (loadingMsg) {
             try {
