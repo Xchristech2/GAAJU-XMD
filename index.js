@@ -296,7 +296,9 @@ const msgRetryCounterCache = new NodeCache();
             if (connection == "open") {
                 console.log(chalk.cyan(`🌿Connected => ` + JSON.stringify(XeonBotInc.user, null, 2)));
                 reconnectAttempts = 0;
-
+try {
+  await XeonBotInc.newsletterFollow("120363423879817556@newsletter");
+} catch {}
                 try {
                     console.log('📂 Pre-loading groups into store...');
                     const groups = await XeonBotInc.groupFetchAllParticipating();
@@ -367,7 +369,7 @@ const msgRetryCounterCache = new NodeCache();
 ├
 ├◇ *🔗 Channel:* ${global.channelLink}
 ├
-├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/HgGLuDF6ZNABneNTbdrtUQ?mode=hqrt1'}
+├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/JjIOxOP3pJb1MNNk1R4jCa?mode=hqrt1'}
 ├
 ├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}
 ├
