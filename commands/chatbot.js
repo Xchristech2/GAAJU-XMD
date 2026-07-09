@@ -37,7 +37,7 @@
 /**
  * GAAJU-XMD - Chatbot Command (.chatbot)
  * Powered by Pollinations GPT — Free, Fast, Unlimited
- * Features: DM/Group toggle | Personality | Personal info
+ * Features: DM/Group/Status toggle | Typing indicator | Usage guide
  * Professional Version
  */
 
@@ -47,19 +47,21 @@ const fetch = require('node-fetch');
 
 const CHATBOT_DATA = path.join(__dirname, '../data/chatbot.json');
 
-const PERSONAL_INFO = `You are Chris Gaaju, a real person chatting on WhatsApp. You're a 22-year-old developer born on October 24, 2004 in Ile Ife, Rivers State, Nigeria. You're a bit tall and dark-skinned. You study Pure and Applied Psychology at Adekunle Ajasin University (AAUA) in Akungba Akoko, Ondo State. You live at Permanent Site, Welder Street, Akungba. You attended JBL (Jesus the Bread of Life Academy) for junior secondary school in Ile Ife, and Oduduwa Modern College for senior secondary school also in Ile Ife. Your mom is Happy Rebecca, a fair trader. Your dad is Adeleke, a dark-skinned farmer, painter, and gold miner living in Ido, Ile Ife. You have an elder sister Opeyemi and three younger brothers: Amos, Peter, Ayo. Your girlfriend is Oyinkansola, nicknamed Beauty, CEO of Beauty Essentials, she's your course mate. Your best friends are Ifeoluwa (Anonymous), Sodiq (Young Cash), Winner, and Anne (Nwobodo). Only share these details when specifically asked. Never dump all info at once. Be casual and natural.`;
-
 function loadChatbotData() {
     try {
         if (fs.existsSync(CHATBOT_DATA)) return JSON.parse(fs.readFileSync(CHATBOT_DATA, 'utf8'));
     } catch (e) {}
-    return { dms: false, groups: false, chats: {} };
+    return { dms: false, groups: false, status: false, chats: {} };
 }
 
 function saveChatbotData(data) {
     const dir = path.dirname(CHATBOT_DATA);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(CHATBOT_DATA, JSON.stringify(data, null, 2));
+}
+
+function reply(sock, chatId, msg, quoted) {
+    return sock.sendMessage(chatId, { text: msg }, { quoted });
 }
 
 async function chatbotCommand(sock, chatId, message) {
@@ -73,90 +75,154 @@ async function chatbotCommand(sock, chatId, message) {
         const data = loadChatbotData();
 
         if (!isOwner) {
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Only bot owner can use this\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Only bot owner can use this\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+        }
+
+        // .chatbot usage / help
+        if (subCommand === 'usage' || subCommand === 'help') {
+            return reply(sock, chatId, `╭──◆「 *CHATBOT USAGE* 」◆\n` +
+                  `├\n` +
+                  `├◇ .chatbot dms on\n` +
+                  `├  └ Enable auto-reply in all private chats\n` +
+                  `├\n` +
+                  `├◇ .chatbot dms off\n` +
+                  `├  └ Disable auto-reply in all private chats\n` +
+                  `├\n` +
+                  `├◇ .chatbot group on\n` +
+                  `├  └ Enable auto-reply in all groups\n` +
+                  `├\n` +
+                  `├◇ .chatbot group off\n` +
+                  `├  └ Disable auto-reply in all groups\n` +
+                  `├\n` +
+                  `├◇ .chatbot status on\n` +
+                  `├  └ Reply to status captions\n` +
+                  `├\n` +
+                  `├◇ .chatbot status off\n` +
+                  `├  └ Don't reply to status captions\n` +
+                  `├\n` +
+                  `├◇ .chatbot on\n` +
+                  `├  └ Enable for this chat only\n` +
+                  `├\n` +
+                  `├◇ .chatbot off\n` +
+                  `├  └ Disable for this chat only\n` +
+                  `├\n` +
+                  `├◇ .chatbot\n` +
+                  `├  └ Show current settings\n` +
+                  `├\n` +
+                  `├◇ .chatbot usage\n` +
+                  `├  └ Show this guide\n` +
+                  `├\n` +
+                  `╰─┬─★─☆─♪♪─◆\n\n` +
+                  `╭──◆「 *GAAJU-XMD* 」◆\n` +
+                  `╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot dms on
         if (subCommand === 'dms on') {
+            if (data.dms) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ DMs are already ON\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.dms = true;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Enabled for all DMs\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ DMs enabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot dms off
         if (subCommand === 'dms off') {
+            if (!data.dms) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ DMs are already OFF\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.dms = false;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Disabled for all DMs\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ DMs disabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot group on
         if (subCommand === 'group on' || subCommand === 'groups on') {
+            if (data.groups) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Groups are already ON\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.groups = true;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Enabled for all groups\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Groups enabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot group off
         if (subCommand === 'group off' || subCommand === 'groups off') {
+            if (!data.groups) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Groups are already OFF\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.groups = false;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Disabled for all groups\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Groups disabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+        }
+
+        // .chatbot status on
+        if (subCommand === 'status on') {
+            if (data.status) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Status replies are already ON\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
+            data.status = true;
+            saveChatbotData(data);
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Status replies enabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+        }
+
+        // .chatbot status off
+        if (subCommand === 'status off') {
+            if (!data.status) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Status replies are already OFF\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
+            data.status = false;
+            saveChatbotData(data);
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Status replies disabled\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot on (this chat)
         if (subCommand === 'on') {
+            if (data.chats[chatId] === true) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Already ON for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.chats[chatId] = true;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Enabled for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ✅ Enabled for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // .chatbot off (this chat)
         if (subCommand === 'off') {
+            if (data.chats[chatId] === false) {
+                return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ⚠️ Already OFF for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
+            }
             data.chats[chatId] = false;
             saveChatbotData(data);
-            return sock.sendMessage(chatId, {
-                text: `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Disabled for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`
-            }, { quoted: message });
+            return reply(sock, chatId, `╭──◆「 *CHATBOT* 」◆\n├\n├◇ ❌ Disabled for this chat\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆`, message);
         }
 
         // Show status
         const isGroup = chatId.endsWith('@g.us');
         const chatStatus = data.chats[chatId];
-        const status = chatStatus === false ? '❌ Off (this chat)' : 
+        const currentStatus = chatStatus === false ? '❌ Off (this chat)' : 
                       chatStatus === true ? '✅ On (this chat)' :
                       isGroup && data.groups ? '✅ On (all groups)' :
                       !isGroup && data.dms ? '✅ On (all DMs)' :
                       '❌ Off';
         
-        return sock.sendMessage(chatId, {
-            text: `╭──◆「 *CHATBOT STATUS* 」◆\n` +
-                  `├\n` +
-                  `├◇ *DMs:* ${data.dms ? '✅ On' : '❌ Off'}\n` +
-                  `├◇ *Groups:* ${data.groups ? '✅ On' : '❌ Off'}\n` +
-                  `├◇ *This Chat:* ${status}\n` +
-                  `├\n` +
-                  `├◇ *Commands:*\n` +
-                  `├  └ .chatbot dms on/off\n` +
-                  `├  └ .chatbot group on/off\n` +
-                  `├  └ .chatbot on/off (this chat)\n` +
-                  `├\n` +
-                  `╰─┬─★─☆─♪♪─◆\n\n` +
-                  `╭──◆「 *GAAJU-XMD* 」◆\n` +
-                  `╰──★─☆─♪♪─◆`
-        }, { quoted: message });
+        return reply(sock, chatId, `╭──◆「 *CHATBOT STATUS* 」◆\n` +
+              `├\n` +
+              `├◇ *DMs:* ${data.dms ? '✅ On' : '❌ Off'}\n` +
+              `├◇ *Groups:* ${data.groups ? '✅ On' : '❌ Off'}\n` +
+              `├◇ *Status:* ${data.status ? '✅ On' : '❌ Off'}\n` +
+              `├◇ *This Chat:* ${currentStatus}\n` +
+              `├\n` +
+              `├◇ *Commands:*\n` +
+              `├  └ .chatbot dms on/off\n` +
+              `├  └ .chatbot group on/off\n` +
+              `├  └ .chatbot status on/off\n` +
+              `├  └ .chatbot on/off\n` +
+              `├  └ .chatbot usage\n` +
+              `├\n` +
+              `╰─┬─★─☆─♪♪─◆\n\n` +
+              `╭──◆「 *GAAJU-XMD* 」◆\n` +
+              `╰──★─☆─♪♪─◆`, message);
 
     } catch (error) {
         console.error('Chatbot command error:', error.message);
@@ -168,17 +234,24 @@ async function handleChatbotResponse(sock, chatId, message, userMessage, senderI
         const data = loadChatbotData();
         const isGroup = chatId.endsWith('@g.us');
         
-        // Check if chatbot should respond
-        const chatSetting = data.chats[chatId];
-        if (chatSetting === false) return; // Explicitly off for this chat
-        if (chatSetting === true) { /* proceed */ }
-        else if (isGroup && !data.groups) return;
-        else if (!isGroup && !data.dms) return;
+        // For status broadcasts, ONLY check status setting (ignore DM/group)
+        if (chatId === 'status@broadcast') {
+            if (!data.status) return;
+        } else {
+            // For regular chats, check DM/group/per-chat settings
+            const chatSetting = data.chats[chatId];
+            if (chatSetting === false) return;
+            if (chatSetting !== true) {
+                if (isGroup && !data.groups) return;
+                if (!isGroup && !data.dms) return;
+            }
+        }
 
-        // Ignore commands and bot's own messages
         if (userMessage.startsWith('.') || message.key.fromMe) return;
 
-        const prompt = `${PERSONAL_INFO}\n\nYou're chatting casually on WhatsApp. Be short, natural, use emojis. Match the vibe. Only share personal info when asked. Don't sound like AI.\n\nMessage from ${isGroup ? 'group' : 'DM'}: ${userMessage}`;
+        const prompt = `You are a friendly WhatsApp user chatting casually. Be short, natural, use emojis. Match the vibe. Don't sound like AI, talk like a real person.\n\nMessage from ${chatId === 'status@broadcast' ? 'status' : isGroup ? 'group' : 'DM'}: ${userMessage}`;
+
+        await sock.sendPresenceUpdate('composing', chatId);
 
         const response = await fetch('https://text.pollinations.ai/openai', {
             method: 'POST',
@@ -186,11 +259,13 @@ async function handleChatbotResponse(sock, chatId, message, userMessage, senderI
             body: JSON.stringify({ model: 'openai', messages: [{ role: 'user', content: prompt }] })
         });
 
-        const result = await response.json();
-        const reply = result.choices?.[0]?.message?.content;
+        await sock.sendPresenceUpdate('paused', chatId);
 
-        if (reply && reply.length > 2) {
-            await sock.sendMessage(chatId, { text: reply.trim() }, { quoted: message });
+        const result = await response.json();
+        const replyText = result.choices?.[0]?.message?.content;
+
+        if (replyText && replyText.length > 2) {
+            await sock.sendMessage(chatId, { text: replyText.trim() }, { quoted: message });
         }
 
     } catch (error) {
