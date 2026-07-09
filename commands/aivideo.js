@@ -1,6 +1,6 @@
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //                                                                                                                                                                                        //
-//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
 //                                                                                                                                                                                        //
 //                                                                  𝐕 : 1.0.0                                                                                                             //
 //                                                                                                                                                                                        //
@@ -19,11 +19,11 @@
 //* 
 //  * project_name : GAAJU-XMD
 //  * author : gaajutech
-//  * youtube : https://www.youtube.com/Xchristech 
+//  * youtube : https://www.youtube.com/Xchristech2 
 //  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
 //*
 //*
-//re-upload? recode? copy code? give credit to gaajutech 2026:)
+//re-upload? recode? copy code? give credit to Chris Gaaju 2025:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
 //GitHub: Xchristech2 
@@ -34,6 +34,7 @@
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
+/**
  * GAAJU-XMD - AI Video Generation Command (.aivideo)
  * Powered by Hugging Face Gradio Spaces — Free forever
  * Features: Text-to-Video | Loading animation
@@ -118,7 +119,7 @@ async function aivideoCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             video: fs.readFileSync(localPath),
             mimetype: 'video/mp4',
-            caption: `╭──◆「 *AI VIDEO GENERATED* 」◆\n├\n├◇ 🎬 *Prompt:* ${query}\n├◇ ✅ *Status:* Success!\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆`
+            caption: `╭──◆「 *AI VIDEO GENERATED* 」◆\n├\n├◇ 🎬 *Prompt:* ${query}\n├◇ ✅ *Status:* Success!\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-MXD* 」◆\n╰───★─☆─♪♪─◆`
         }, { quoted: message });
 
         fs.unlinkSync(localPath);
