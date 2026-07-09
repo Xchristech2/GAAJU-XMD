@@ -26,7 +26,7 @@
 //re-upload? recode? copy code? give credit to gaajutech 2026:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
-//GitHub: Xchristech2
+//GitHub: Xchristech2 
 //WhatsApp: +2348069675806
 //want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
 //   * Created By Github: Xchristech2.
@@ -38,6 +38,7 @@ const settings = require('../settings');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const fetch = require('node-fetch');
 const { getCurrentFont, applyFont } = require('./menufont');
 const { getCurrentStyle } = require('./menustyle');
 
@@ -55,47 +56,18 @@ function getDeploymentPlatform() {
     return 'Local Machine';
 }
 
-function updateUserStats(userJid, platform) {
+async function getUserStats() {
     try {
-        const userPhone = userJid.split('@')[0];
-        const statsPath = path.join(__dirname, '../data/userStats.json');
-        const dataDir = path.dirname(statsPath);
-        if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-        let stats = { totalUsers: 0, activeUsers: {}, platforms: {}, users: {}, lastUpdated: Date.now(), botName: settings.botName || 'GAAJU-XMD', version: settings.version || '1.0.0' };
-        if (fs.existsSync(statsPath)) { try { stats = JSON.parse(fs.readFileSync(statsPath, 'utf8')); } catch (e) {} }
-        const userKey = `user_${userPhone}`;
-        const isNewUser = !stats.users[userKey];
-        const currentTime = Date.now();
-        stats.users[userKey] = { phone: userPhone, platform: platform, lastActive: currentTime, firstSeen: isNewUser ? currentTime : (stats.users[userKey]?.firstSeen || currentTime), totalUses: (stats.users[userKey]?.totalUses || 0) + 1 };
-        if (isNewUser) { stats.platforms[platform] = (stats.platforms[platform] || 0) + 1; stats.totalUsers = Object.keys(stats.users).length; }
-        stats.activeUsers[userKey] = currentTime;
-        const thirtyMinutesAgo = currentTime - (30 * 60 * 1000);
-        Object.keys(stats.activeUsers).forEach(key => { if (stats.activeUsers[key] < thirtyMinutesAgo) delete stats.activeUsers[key]; });
-        stats.lastUpdated = currentTime;
-        fs.writeFileSync(statsPath, JSON.stringify(stats, null, 2));
-        return { totalUsers: stats.totalUsers, activeUsers: Object.keys(stats.activeUsers).length, platforms: stats.platforms };
-    } catch (error) { return { totalUsers: 1, activeUsers: 1, platforms: { [platform]: 1 } }; }
-}
-
-function getUserStats() {
-    try {
-        const statsPath = path.join(__dirname, '../data/userStats.json');
-        if (!fs.existsSync(statsPath)) return { totalUsers: 0, activeUsers: 0, platforms: {} };
-        const stats = JSON.parse(fs.readFileSync(statsPath, 'utf8'));
-        const currentTime = Date.now();
-        const fiveMinutesAgo = currentTime - (5 * 60 * 1000);
-        let activeCount = 0;
-        for (const [key, user] of Object.entries(stats.users || {})) {
-            if (user.lastActive && user.lastActive >= fiveMinutesAgo) {
-                activeCount++;
-            }
-        }
+        const res = await fetch('https://gemini-proxy-10a1.onrender.com/v1/stats');
+        const data = await res.json();
         return {
-            totalUsers: stats.totalUsers || Object.keys(stats.users || {}).length,
-            activeUsers: activeCount,
-            platforms: stats.platforms || {}
+            totalUsers: data.totalUsers || 0,
+            activeUsers: data.activeUsers || 0,
+            platforms: {}
         };
-    } catch (error) { return { totalUsers: 0, activeUsers: 0, platforms: {} }; }
+    } catch (e) {
+        return { totalUsers: 0, activeUsers: 0, platforms: {} };
+    }
 }
 
 function getPrefix() { return settings.prefix || '.'; }
@@ -168,10 +140,9 @@ function getSystemStats() {
     const uptimeInSeconds = process.uptime();
     const uptimeFormatted = formatTime(uptimeInSeconds);
     const totalMem = os.totalmem() / 1024 / 1024 / 1024;
-    const usedMem = (os.totalmem() - os.freemem()) / 1024 / 1024 / 1024;
     const usedGB = (os.totalmem() - os.freemem()) / 1024 / 1024 / 1024;
     const totalGB = os.totalmem() / 1024 / 1024 / 1024;
-    const usagePercent = ((usedMem / totalMem) * 100).toFixed(1);
+    const usagePercent = ((usedGB / totalMem) * 100).toFixed(1);
     const barLength = 10;
     const filled = Math.round((usagePercent / 100) * barLength);
     const empty = barLength - filled;
@@ -193,7 +164,6 @@ async function sendMenuAudio(sock, chatId, message) {
 function buildMenu(styleId, data) {
     const { userName, greeting, prefix, totalCommands, stats, dayInfo, currentBotMode, mediaDisplay, userPlatform, getLocalizedTime, fontId, styleId: styleNum, systemStats, ping } = data;
 
-    // ✅ All info lines with emojis
     const infoLines = [
         `*👤 User:* ${userName}`,
         `*🤖 BotName:* ${settings.botName || 'GAAJU-XMD'}`,
@@ -219,16 +189,13 @@ function buildMenu(styleId, data) {
         `*🚀 Speed:* ${ping} ms`,
         `*⏱️ Uptime:* ${systemStats.uptime}`,
         `*💾 Usage:* ${systemStats.bar} ${systemStats.usagePercent}%`,
-        `*💾 Ram:* ${systemStats.usedGB} GB of ${systemStats.totalGB} GB`,
-        `*🌐 Users by Platform:*`,
-        `  🏠 ${userPlatform === 'Local Machine' ? 'Panel' : userPlatform}: ${stats.platforms?.[userPlatform] || 1} users`,
-        `*📡 Tracking:* Local Storage`
+        `*💾 Ram:* ${systemStats.usedGB} GB of ${systemStats.totalGB} GB`
     ];
 
-    // ✅ All command categories with their commands
     const allCommandsRaw = {
-        '🧠 AI': [`.gemini`, `.gpt`, `.generate`, `.removebg`, `.sora`],
+        '🧠 AI': [`.chatbot`, `.code`, `.gemini`, `.gpt`, `.generate`, `.summarise`],
         '🦹 ANIME': [`.cry`, `.facepalm`, `.hug`, `.kiss`, `.nom`, `.pat`, `.poke`, `.wink`],
+        '👨‍💻 DEVELOPER': [`.totalusers`],
         '📥 DOWNLOAD': [`.facebook`, `.instagram`, `.play`, `.song`, `.spotify`, `.tiktok`, `.video`, `.ytmp4`],
         '🔤 EPHOTO': [`.1917`, `.arena`, `.blackpink`, `.devil`, `.fire`, `.glitch`, `.hacker`, `.ice`, `.impressive`, `.leaves`, `.light`, `.matrix`, `.metallic`, `.neon`, `.purple`, `.sand`, `.snow`, `.thunder`],
         '😁 FUN': [`.character`, `.compliment`, `.flirt`, `.goodnight`, `.insult`, `.poet`, `.roseday`, `.simp`, `.wasted`],
@@ -237,13 +204,13 @@ function buildMenu(styleId, data) {
         '💻 GITHUB': [`.git`, `.github`, `.repo`, `.sc`, `.script`],
         '👥 GROUP': [`.admins`, `.antibadword`, `.antibot`, `.antilink`, `.antitag`, `.ban`, `.chatbot`, `.delete`, `.demote`, `.goodbye`, `.groupinfo`, `.hidetag`, `.jid`, `.kick`, `.mute`, `.promote`, `.resetlink`, `.setgdesc`, `.setgname`, `.setgpp`, `.ship`, `.stupid`, `.tag`, `.tagall`, `.tagnotadmin`, `.unban`, `.unmute`, `.warn`, `.warnings`, `.welcome`],
         '🧩 MISC': [`.circle`, `.comrade`, `.gay`, `.glass`, `.heart`, `.horny`, `.its-so-stupid`, `.jail`, `.lgbt`, `.lolice`, `.namecard`, `.oogway`, `.oogway2`, `.passed`, `.tonikawa`, `.triggered`, `.tweet`, `.ytcomment`],
-        '🔒 OWNER': [`.anticall`, `.antidelete`, `.antiforeign`, `.autoreact`, `.autoread`, `.autorecord`, `.autorecordtype`, `.autostatus`, `.autotyping`, `.block`, `.botinfo`, `.checkupdate`, `.clearsession`, `.cleartmp`, `.confighelp`, `.getpp`, `.join`, `.leave`, `.mention`, `.menufont`, `.menustyle`, `.mode`, `.pmblocker`, `.poll`, `.restart`, `.setauthor`, `.setbotname`, `.setbotowner`, `.setmention`, `.setownernumber`, `.setpackname`, `.setpp`, `.setprefix`, `.settings`, `.settimezone`, `.setytchannel`, `.sudo`, `.tempfile`, `.unblock`, `.update`, `.vote`],
-        '🎨 STICKER': [`.blur`, `.crop`, `.emojimix`, `.igsc`, `.igs`, `.meme`, `.removebg`, `.remini`, `.simage`, `.sticker`, `.take`, `.tgsticker`]
+        '🔒 OWNER': [`.anticall`, `.antidelete`, `.antiforeign`, `.autoreact`, `.autoread`, `.autorecord`, `.autorecordtype`, `.autostatus`, `.autotyping`, `.block`, `.botinfo`, `.checkupdate`, `.clearsession`, `.cleartmp`, `.confighelp`, `.getpp`, `.join`, `.leave`, `.mention`, `.menufont`, `.menustyle`, `.mode`, `.pmblocker`, `.poll`, `.restart`, `.setauthor`, `.setbotname`, `.setbotowner`, `.setmention`, `.setownernumber`, `.setpackname`, `.setpp`, `.setprefix`, `.settings`, `.settimezone`, `.setytchannel`, `.sudo`, `.tempfile`, `.unblock`, `.update`, `.userinfo`, `.vote`],
+        '🎨 STICKER': [`.blur`, `.crop`, `.emojimix`, `.igsc`, `.igs`, `.meme`, `.remini`, `.simage`, `.sticker`, `.take`, `.tgsticker`],
+        '⚙️ TOOLS': [`.removebg`],
     };
 
-    // ✅ Sort categories alphabetically by name
     const sortedCategoryNames = Object.keys(allCommandsRaw).sort((a, b) => {
-        const nameA = a.replace(/^[^\s]+\s/, ''); // Remove emoji for sorting
+        const nameA = a.replace(/^[^\s]+\s/, '');
         const nameB = b.replace(/^[^\s]+\s/, '');
         return nameA.localeCompare(nameB);
     });
@@ -264,7 +231,7 @@ function buildMenu(styleId, data) {
         12: { top: '╭──⍋「 BOT INFO 」⍋', line: '▶', secHdr: (s) => `╰─⍋─⍋─⍋─⍋─⍋─⍋─⍋─⍋\n╭──⍋「 ${s} 」⍋`, bot: '╰─⍋─⍋─⍋─⍋─⍋─⍋─⍋─⍋', bul: '▶ ' }
     };
 
-    // 🟢 STYLE 1 (DEFAULT) — New Diamond Design
+    // 🟢 STYLE 1 (DEFAULT) — Diamond Design
     if (styleId === 1) {
         let menu = `👋 Hello *${userName.split('@')[0]}*! ${greeting.message}\n\n`;
         menu += `*${greeting.greeting}!* Here's your menu:\n\n`;
@@ -279,12 +246,12 @@ function buildMenu(styleId, data) {
             menu += `├\n╰─┬─★─☆─♪♪─★\n\n`;
         }
         menu += `              *© 2025 - 2026*\n\n`;
-        menu += `╭──「 *GAAJU-XMD* 」◆\n`;
+        menu += `╭──「 *GAAJU-MD* 」◆\n`;
         menu += `╰───★─☆─♪♪─◆`;
         return menu;
     }
 
-    // 🟡 STYLES 2–12 — Keep original
+    // 🟡 STYLES 2–12
     const s = styles[styleId] || styles[2];
     let menu = `👋 Hello *${userName.split('@')[0]}*! ${greeting.message}\n\n`;
     menu += `*${greeting.greeting}!* Here's your menu:\n\n`;
@@ -296,7 +263,7 @@ function buildMenu(styleId, data) {
     }
     menu += s.bot + '\n\n';
     menu += `📊 Total Commands: ${totalCommands}\n\n`;
-    menu += `📊 Local Stats: ${stats.activeUsers} active now, ${stats.totalUsers} total users\n\n`;
+    menu += `📊 Live Stats: ${stats.activeUsers} active now, ${stats.totalUsers} total users\n\n`;
     menu += `${greeting.emoji} *${greeting.greeting}*, *${userName.split('@')[0]}*! ${greeting.message}`;
     return menu;
 }
@@ -304,7 +271,6 @@ function buildMenu(styleId, data) {
 async function helpCommand(sock, chatId, message) {
     const senderId = message.key.participant || message.key.remoteJid;
 
-    // Resolve LID to real JID for proper channel button rendering
     let sendChatId = chatId;
     let realSenderJid = senderId;
     if (chatId.endsWith('@lid')) {
@@ -312,7 +278,6 @@ async function helpCommand(sock, chatId, message) {
         if (realJid?.includes('@s.whatsapp.net')) {
             sendChatId = realJid;
             realSenderJid = realJid;
-            console.log(`✅ Resolved LID ${chatId} → ${sendChatId}`);
         }
     }
     
@@ -323,8 +288,7 @@ async function helpCommand(sock, chatId, message) {
     const prefix = getPrefix();
     const userPlatform = getDeploymentPlatform();
     const totalCommands = countTotalCommands();
-    const stats = getUserStats();
-    updateUserStats(senderId, userPlatform);
+    const stats = await getUserStats();
     const fontId = getCurrentFont();
     const styleId = getCurrentStyle();
     const systemStats = getSystemStats();
@@ -340,7 +304,6 @@ async function helpCommand(sock, chatId, message) {
     else if (fs.existsSync(imagePath)) menuType = 'Image';
     else if (fs.existsSync(gifPath)) menuType = 'GIF';
 
-    // ✅ Fix: Show "GIF & Audio" in menu info
     const mediaDisplay = menuType === 'GIF' ? 'GIF & Audio' : menuType === 'Image' ? 'Image & Audio' : 'Text & Audio';
 
     const getLocalizedTime = () => {
@@ -348,22 +311,16 @@ async function helpCommand(sock, chatId, message) {
         catch (e) { return new Date().toLocaleString(); }
     };
 
-    let platformStatsText = '';
-    const platforms = stats.platforms || {};
-    const platformEntries = Object.entries(platforms).sort((a, b) => b[1] - a[1]);
-    platformStatsText = platformEntries.length > 0 ? platformEntries.map(([p, c]) => `║     ${getPlatformEmoji(p)} ${p}: ${c} users`).join('\n') : '║     📊 No platform data yet';
-
     let helpMessage = buildMenu(styleId, {
         userName, greeting, prefix, totalCommands, stats, dayInfo, currentBotMode, mediaDisplay, userPlatform, getLocalizedTime, styleId, fontId, systemStats, ping
     });
 
-    // ✅ Channel button using newsletter approach
     const channelCtx = {
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363406588763460@newsletter',
-            newsletterName: '‎', // ← invisible zero‑width character
+            newsletterName: '‎',
             serverMessageId: -1
         }
     };
