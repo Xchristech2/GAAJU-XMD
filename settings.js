@@ -51,5 +51,5 @@ const settings = {
   updateZipUrl: "https://github.com/Xchristech2/GAAJU-XMD/archive/refs/heads/main.zip",
 };
 
-global.sessionid = process.env.SESSION_ID || "";
+global.sessionid = process.env.SESSION_ID;
 module.exports = settings;
