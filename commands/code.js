@@ -98,25 +98,26 @@ const text = message.message?.conversation || message.message?.extendedTextMessa
 const query = text.split(' ').slice(1).join(' ').trim();
 
 if (!query) {
-return sock.sendMessage(chatId, {
-text: ╭──◆「 *AI CODE GENERATOR* 」◆\n +
-├\n +
-├◇ 💻 Generate code with AI\n +
-├◇ 🤖 GPT-4o + Llama + Pollinations\n +
-├◇ 🆓 Free via GitHub Models\n +
-├\n +
-├◇ *📖 Usage:*\n +
-├ └ .code &lt;prompt&gt;\n +
-├\n +
-├◇ *✨ Examples:*\n +
-├ └ .code login form in html\n +
-├ └ .code python fibonacci function\n +
-├ └ .code discord bot in js\n +
-├\n +
-╰─┬─★─☆─♪♪─◆\n\n +
-╭──◆「 *GAAJU-XMD* 」◆\n +
-╰───★─☆─♪♪─◆
-}, { quoted: message });
+  return sock.sendMessage(chatId, {
+    text: `╭──◆「 *AI CODE GENERATOR* 」◆
+├
+├◇ 💻 Generate code with AI
+├◇ 🤖 GPT-4o + Llama + Pollinations
+├◇ 🆓 Free via GitHub Models
+├
+├◇ *📖 Usage:*
+├ └ .code <prompt>
+├
+├◇ *✨ Examples:*
+├ └ .code login form in html
+├ └ .code python fibonacci function
+├ └ .code discord bot in js
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰───★─☆─♪♪─◆`
+  }, { quoted: message });
 }
 
 loadingMsg = await sock.sendMessage(chatId, { text: LOADING_FRAMES[0] });
@@ -144,10 +145,10 @@ clearInterval(interval);
 if (!answer || answer.length < 10) throw new Error('NO_RESPONSE');
 
 // Extract ONLY code from inside triple backticks
-const codeBlockMatch = answer.match(/[\s\S]*?/);
-const cleanCode = codeBlockMatch
-? codeBlockMatch[0].replace(/\w*\n?/g, '').replace(//g, '').trim()
-: answer.trim();
+const codeBlockMatch = answer.match(/```[\w-]*\n([\s\S]*?)```/);
+const cleanCode = codeBlockMatch ?
+  codeBlockMatch[1].trim() :
+  answer.trim();
 
 const langMatch = codeBlockMatch ? codeBlockMatch[0].match(/```(\w+)/) : null;
 const lang = langMatch ? langMatch[1].toLowerCase() : '';
@@ -156,10 +157,10 @@ const extension = EXT_MAP[lang] || 'txt';
 // AI-suggested filename
 const fileMatch = answer.match(/FILENAME:\s*(\w+)/i);
 const fileNameWord = (fileMatch ? fileMatch[1] : 'code').toLowerCase();
-const fileName = ${fileNameWord}.${extension};
+const fileName = fileNameWord + "." + extension;
 
 // Extract feedback ONLY from text outside code blocks
-const feedbackRaw = answer.replace(/[\s\S]*?/g, '').replace(/FILENAME:\s*\w+/i, '').trim();
+const feedbackRaw = answer   .replace(/```[\w-]*\n[\s\S]*?```/g, '')   .replace(/FILENAME:\s*\w+/i, '')   .trim();
 const allFeedbackLines = wrapFeedback(feedbackRaw, 25);
 
 // Split feedback: first half for raw, second half for demo
@@ -168,17 +169,21 @@ const rawFeedbackLines = allFeedbackLines.slice(0, mid);
 const demoFeedbackLines = allFeedbackLines.slice(mid);
 
 let rawFeedbackOutput = '';
-for (const line of rawFeedbackLines) rawFeedbackOutput += ├◇ ${line.toLowerCase()}\n`;
+for (const line of rawFeedbackLines) {
+    rawFeedbackOutput += `├◇ ${line.toLowerCase()}\n`;
+}
 
 let demoFeedbackOutput = '';
 const demoLinesToUse = demoFeedbackLines.length > 0 ? demoFeedbackLines : rawFeedbackLines;
-for (const line of demoLinesToUse) demoFeedbackOutput += ├◇${line.toLowerCase()}\n`;
+for (const line of demoLinesToUse) {
+  demoFeedbackOutput += `├◇ ${line.toLowerCase()}\n`;
+}
 
 const outputDir = './output';
 if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
 
 // File 1: Raw code — pure code only
-const txtFileName = ${fileNameWord}.txt`;
+const txtFileName = `${fileNameWord}.txt`;
 const txtPath = path.join(outputDir, txtFileName);
 fs.writeFileSync(txtPath, cleanCode);
 
@@ -188,7 +193,8 @@ if (extension === 'html') {
 demoFileName = fileName;
 demoContent = cleanCode;
 } else {
-demoFileName = ``${fileNameWord}_preview.html; demoContent =`;
+demoFileName = `${fileNameWord}_preview.html`;
+demoContent = cleanCode;
 }
 const demoPath = path.join(outputDir, demoFileName);
 fs.writeFileSync(demoPath, demoContent);
@@ -200,13 +206,19 @@ await sock.sendMessage(chatId, {
 document: fs.readFileSync(txtPath),
 fileName: txtFileName,
 mimetype: 'text/plain',
-caption: ╭──◆「 *RAW CODE* 」◆\n +
-├\n +
-├◇ *💻 File:* ${txtFileName}\n+├\n+├◇ 📝 Feedback:\n+ rawFeedbackOutput +├\n+├◇ 🤖 Model:${usedModel}\n +
-├\n +
-╰─┬─★─☆─♪♪─◆\n\n +
-╭──◆「 *GAAJU-XMD* 」◆\n +
-╰───★─☆─♪♪─◆
+caption: `╭──◆「 *RAW CODE* 」◆
+├
+├◇ *💻 File:* ${txtFileName}
+├
+├◇ 📝 Feedback:
+${rawFeedbackOutput}
+├
+├◇ 🤖 Model: ${usedModel}
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰───★─☆─♪♪─◆`
 }, { quoted: message });
 
 // Send demo file
@@ -214,28 +226,46 @@ await sock.sendMessage(chatId, {
 document: fs.readFileSync(demoPath),
 fileName: demoFileName,
 mimetype: 'text/html',
-caption: ╭──◆「 *${extension === 'html' ? 'LIVE PREVIEW' : 'CODE PREVIEW'}* 」◆\n+├\n+├◇ 💻 File:${demoFileName}\n +
-├\n +
-├◇ *📝 Feedback:*\n +
-demoFeedbackOutput +
-├\n +
-├◇ *🤖 Model:* ${usedModel}\n +
-├\n +
-╰─┬─★─☆─♪♪─◆\n\n +
-╭──◆「 *GAAJU-XMD* 」◆\n +
-╰───★─☆─♪♪─◆
+caption: `╭──◆「 *${extension === 'html' ? 'LIVE PREVIEW' : 'CODE PREVIEW'}* 」◆
+├
+├◇ 💻 File: ${demoFileName}
+├
+├◇ *📝 Feedback:*
+${demoFeedbackOutput}├
+├◇ *🤖 Model:* ${usedModel}
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰───★─☆─♪♪─◆`
 }, { quoted: message });
 
 fs.unlinkSync(txtPath);
 fs.unlinkSync(demoPath);
 
 } catch (error) {
-console.error('Code error:', error.message);
-if (loadingMsg) { try { await sock.sendMessage(chatId, { edit: loadingMsg.key, text: 'Failed [■■■■■■□□□□]' }); } catch (e) {} }
-await sock.sendMessage(chatId, {
-text: ╭──◆「 *CODE FAILED* 」◆\n├\n├◇ ❌ Unable to generate code\n├◇ 💡 Try a different prompt\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆
-}, { quoted: message });
-}
-}
+  console.error('Code error:', error.message);
 
+  if (loadingMsg) {
+    try {
+      await sock.sendMessage(chatId, {
+        edit: loadingMsg.key,
+        text: 'Failed [■■■■■■□□□□]'
+      });
+    } catch (e) {}
+  }
+
+  await sock.sendMessage(chatId, {
+    text: `╭──◆「 *CODE FAILED* 」◆
+├
+├◇ ❌ Unable to generate code
+├◇ 💡 Try a different prompt
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰───★─☆─♪♪─◆`
+  }, { quoted: message });
+}
+}
 module.exports = codeCommand;
