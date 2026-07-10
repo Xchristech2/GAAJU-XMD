@@ -1,5 +1,0 @@
-{
-  "name": "GAAJU-XMD",
-  "image": "node:latest",
-  "postCreateCommand": "npm install"
-}
