@@ -93,33 +93,51 @@ textToSummarise = userText;
 }
 
 if (!textToSummarise) {
-return sock.sendMessage(chatId, {
-text: ╭──◆「 *SUMMARISE* 」◆\n +
-├\n +
-├◇ 📝 Summarise any text\n +
-├◇ 🆓 Powered by Pollinations\n +
-├\n +
-├◇ *📖 Usage:*\n +
-├ └ Reply to a message with .summarise\n +
-├ └ .summarise &lt;your text&gt;\n +
-├\n +
-╰─┬─★─☆─♪♪─◆\n\n +
-╭──◆「 *GAAJU-XMD* 」◆\n +
-╰──★─☆─♪♪─◆
-}, { quoted: message });
+  return sock.sendMessage(chatId, {
+    text: `╭──◆「 *SUMMARISE* 」◆
+├
+├◇ 📝 Summarise any text
+├◇ 🆓 Powered by Pollinations
+├
+├◇ *📖 Usage:*
+├ └ Reply to a message with .summarise
+├ └ .summarise <your text>
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰──★─☆─♪♪─◆`
+  }, { quoted: message });
 }
 
 // If text is already short, return as-is
 if (textToSummarise.split(' ').length <= 15) {
-const rawLines = textToSummarise.split('\n');
-let output = '';
-for (const line of rawLines) {
-if (line.trim().length === 0) {
-output += '├\n';
-} else {
-const wrapped = wrapText(line.trim(), 30);
-for (const w of wrapped) output += ├◇ ${w}\n; } } return sock.sendMessage(chatId, { text:╭──◆「 SUMMARISED 」◆\n+├\n+├◇ 📝 Already short, no summary needed\n+├\n+ output +├\n+╰─┬─★─☆─♪♪─◆\n\n+╭──◆「 GAAJU-XMD 」◆\n+╰──★─☆─♪♪─◆`
-}, { quoted: message });
+  const rawLines = textToSummarise.split('\n');
+  let output = '';
+
+  for (const line of rawLines) {
+    if (line.trim().length === 0) {
+      output += '├\n';
+    } else {
+      const wrapped = wrapText(line.trim(), 30);
+      for (const w of wrapped) {
+        output += `├◇ ${w}\n`;
+      }
+    }
+  }
+
+  return sock.sendMessage(chatId, {
+    text: `╭──◆「 *SUMMARISED* 」◆
+├
+├◇ 📝 Already short, no summary needed
+├
+${output}
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰──★─☆─♪♪─◆`
+  }, { quoted: message });
 }
 
 // Start animation
@@ -129,7 +147,7 @@ const interval = setInterval(async () => {
 try { if (frame < LOADING_FRAMES.length - 1) { frame++; await sock.sendMessage(chatId, { edit: loadingMsg.key, text: LOADING_FRAMES[frame] }); } } catch (e) {}
 }, 600);
 
-const systemPrompt = You are a text summariser ONLY. Your ONLY job is to summarise. STRICT RULES: If the text is a question, do NOT answer it — just return it as-is. If the text is short (under 15 words), just return it as-is. Only summarise long factual texts. Start summaries with *Here is the summary:* or *The summary of this message is:*. Keep each line under 30 characters. Use *bold* ONLY for headings on their own line. NEVER use **. NEVER use _italic_. Use • for bullets. Use emojis naturally. Text to summarise:${textToSummarise}`;
+const systemPrompt = `You are a text summariser ONLY. Your ONLY job is to summarise. STRICT RULES: If the text is a question, do NOT answer it — just return it as-is. If the text is short (under 15 words), just return it as-is. Only summarise long factual texts. Start summaries with *Here is the summary:* or *The summary of this message is:*. Keep each line under 30 characters. Use *bold* ONLY for headings on their own line. NEVER use **. NEVER use _italic_. Use • for bullets. Use emojis naturally. Text to summarise:${textToSummarise}`;
 
 const response = await fetch('https://text.pollinations.ai/openai', {
 method: 'POST',
@@ -148,32 +166,52 @@ await sock.sendMessage(chatId, { edit: loadingMsg.key, text: 'Done [■■■■
 
 const rawLines = answer.split('\n');
 let output = '';
+
 for (const line of rawLines) {
-if (line.trim().length === 0) {
-output += '├\n';
-} else {
-const wrapped = wrapText(line.trim(), 30);
-for (const w of wrapped) output += ├◇ ${w}\n;
-}
+    if (line.trim().length === 0) {
+        output += '├\n';
+    } else {
+        const wrapped = wrapText(line.trim(), 30);
+        for (const w of wrapped) {
+            output += `├◇ ${w}\n`;
+        }
+    }
 }
 
 await sock.sendMessage(chatId, {
-text: ╭──◆「 *SUMMARISED* 」◆\n +
-├\n +
-output +
-├\n +
-╰─┬─★─☆─♪♪─◆\n\n +
-╭──◆「 *GAAJU-XMD* 」◆\n +
-╰──★─☆─♪♪─◆
+    text: `╭──◆「 *SUMMARISED* 」◆
+├
+${output}
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰──★─☆─♪♪─◆`
 }, { quoted: message });
 
 } catch (error) {
-console.error('Summarise error:', error.message);
-if (loadingMsg) { try { await sock.sendMessage(chatId, { edit: loadingMsg.key, text: 'Failed [■■■■■■□□□□]' }); } catch (e) {} }
-await sock.sendMessage(chatId, {
-text: ╭──◆「 *SUMMARISE FAILED* 」◆\n├\n├◇ ❌ Unable to summarise\n├◇ 💡 Try again later\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰──★─☆─♪♪─◆
-}, { quoted: message });
-}
-}
+    console.error('Summarise error:', error.message);
 
+    if (loadingMsg) {
+        try {
+            await sock.sendMessage(chatId, {
+                edit: loadingMsg.key,
+                text: 'Failed [■■■■■■□□□□]'
+            });
+        } catch (e) {}
+    }
+
+    await sock.sendMessage(chatId, {
+        text: `╭──◆「 *SUMMARISE FAILED* 」◆
+├
+├◇ ❌ Unable to summarise
+├◇ 💡 Try again later
+├
+╰─┬─★─☆─♪♪─◆
+
+╭──◆「 *GAAJU-XMD* 」◆
+╰──★─☆─♪♪─◆`
+    }, { quoted: message });
+}
+}
 module.exports = summariseCommand;
