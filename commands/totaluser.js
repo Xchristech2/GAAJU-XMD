@@ -1,0 +1,81 @@
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//                                                                                                                                                                                        //
+//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//* 
+//  * project_name : GAAJU-XMD
+//  * author : gaajutech
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
+//*
+//*
+//re-upload? recode? copy code? give credit to gaajutech 2026:)
+//Instagram: gaajutech
+//Telegram: t.me/Official_ChrisGaaju
+//GitHub: Xchristech2 
+//WhatsApp: +2348069675806
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: Xchristech2.
+//   * Credit To Chris Gaaju 
+//   * © 2025 GAAJU-XMD.
+// ⛥┌┤
+// */
+
+const fetch = require('node-fetch');
+
+const PROXY_URL = 'https://gemini-proxy-10a1.onrender.com';
+
+async function totalUsersCommand(sock, chatId, message) {
+    try {
+        const senderNumber = (message.key.remoteJidAlt || message.key.participant || message.key.remoteJid).split('@')[0].split(':')[0];
+        console.log('Sender number:', senderNumber);
+        const res = await fetch(`${PROXY_URL}/v1/admin/users`, {
+            headers: { 'x-user-number': senderNumber }
+        });
+
+        if (res.status === 401) {
+            return sock.sendMessage(chatId, {
+                text: `╭──◆「 *ADMIN ONLY* 」◆\n├\n├◇ ❌ Developer access only\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆`
+            }, { quoted: message });
+        }
+
+        const data = await res.json();
+        const inactiveCount = data.totalUsers - data.activeUsers;
+
+        let msg = `╭──◆「 *USER STATS* 」◆\n├\n`;
+        msg += `├◇ 📊 Total Users: ${data.totalUsers}\n`;
+        msg += `├◇ 🟢 Active Now: ${data.activeUsers}\n`;
+        msg += `├◇ 🔴 Inactive: ${inactiveCount}\n`;
+        msg += `├\n├◇ *All Users:*\n`;
+
+        for (const u of data.users) {
+            const icon = u.isOnline ? '🟢' : '🔴';
+            msg += `├◇ ${icon} ${u.userId}\n`;
+        }
+
+        msg += `├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆`;
+
+        await sock.sendMessage(chatId, { text: msg }, { quoted: message });
+
+    } catch (error) {
+        await sock.sendMessage(chatId, {
+            text: `╭──◆「 *ERROR* 」◆\n├\n├◇ ❌ Failed to fetch stats\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆`
+        }, { quoted: message });
+    }
+}
+
+module.exports = totalUsersCommand;
