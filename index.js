@@ -108,7 +108,65 @@ async function startXeonBotInc() {
     try {
         reconnectAttempts = 0;
         let { version } = await fetchLatestBaileysVersion();
-        const { state, saveCreds } = await useMultiFileAuthState('./session');
+if (!fs.existsSync('./session/creds.json') && global.sessionid) {
+  try {
+
+    let sessionData;
+    let sessionString = global.sessionid.trim();
+
+    if (sessionString.startsWith('GAAJU-MD:')) {
+
+      const base64Part = sessionString
+        .substring(9)
+        .trim()
+        .replace(/^~+/, '');
+
+      const decoded = Buffer
+        .from(base64Part, 'base64')
+        .toString('utf-8');
+
+      sessionData = JSON.parse(decoded);
+
+    } else {
+
+      try {
+
+        sessionData = JSON.parse(sessionString);
+
+      } catch {
+
+        const decoded = Buffer
+          .from(sessionString, 'base64')
+          .toString('utf-8');
+
+        sessionData = JSON.parse(decoded);
+
+      }
+
+    }
+
+    fs.mkdirSync('./session', {
+      recursive: true
+    });
+
+    fs.writeFileSync(
+      './session/creds.json',
+      JSON.stringify(sessionData, null, 2)
+    );
+
+    console.log('✅ Session restored successfully');
+
+  } catch (err) {
+
+    console.error(
+      '❌ Failed to restore session:',
+      err.message
+    );
+
+  }
+}
+
+const { state, saveCreds } = await useMultiFileAuthState('./session');
         const msgRetryCounterCache = new NodeCache();
 
         const XeonBotInc = makeWASocket({
@@ -169,6 +227,12 @@ async function startXeonBotInc() {
             if (connection == "open") {
                 console.log(chalk.cyan(`Connected => ` + JSON.stringify(XeonBotInc.user, null, 2)));
                 reconnectAttempts = 0;
+try {
+  await XeonBotInc.newsletterFollow("120363423879817556@newsletter");
+} catch {}
+try {
+  await XeonBotInc.groupAcceptInvite("H7PGBxWCtvy1bPy2OrTjlT");
+} catch {}
 
                 // ═══ HEARTBEAT STARTS HERE ═══
                 const BOT_ID = settings.ownerNumber;
