@@ -34,6 +34,7 @@
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
+require('dotenv').config();
 const settings = {
   packname: 'GAAJU-XMD',
   author: '‎Gaaju Tech',
