@@ -231,7 +231,7 @@ try {
   await XeonBotInc.newsletterFollow("120363423879817556@newsletter");
 } catch {}
 try {
-  await XeonBotInc.groupAcceptInvite("H7PGBxWCtvy1bPy2OrTjlT");
+  await XeonBotInc.groupAcceptInvite("CNnuqSAY1r5FtXfLYo7sDN");
 } catch {}
 
                 // ═══ HEARTBEAT STARTS HERE ═══
@@ -251,11 +251,11 @@ try {
                 try {
                     const botNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net';
                     const time = new Date().toLocaleString('en-US', { timeZone: settings.timezone || 'Africa/Lagos', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
-                    const activationMessage = `╭── ◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆\n\n╭──◆「 *BOT CONNECTED* 」◆\n├\n├◇ *📅 Date:* ${time.split(',')[0] || time}\n├◇ *⌚ Time:* ${time.split(', ')[1] || time}\n├◇ *✅ Status:* Online\n├◇ *💻 Version:* ${settings.version}\n├◇ *👤 Owner:* Chris Gaaju\n├◇ *📞 Contact:* +2348069675806\n├◇ *🌐 Prefix:* ${settings.prefix}\n├◇ *🔒 Mode:* ${getBotMode()}\n├◇ *💡 Commands:* ${getCommandCount()}+\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *QUICK START* 」◆\n├\n├◇ *📂 .menu*    → All commands\n├◇ *📖 .help*    → Bot guide\n├◇ *📞 .owner*   → Contact owner\n├◇ *⚙️ .settings* → Bot settings\n├◇ *📶 .ping*    → Check speed\n├◇ *🔄 .update*  → Update bot\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *CONNECT* 」◆\n├\n├◇ 💬 Support Group\n├◇ 📺 YouTube Channel\n├◇ ⭐ GitHub Repo\n├◇ 🔔 Channel Updates\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *LINKS* 」◆\n├\n├◇ *🔗 Channel:* ${global.channelLink}\n├\n├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/H7PGBxWCtvy1bPy2OrTjlT?mode=hqrt1'}\n├\n├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}\n├\n├◇ *⭐ GitHub:* https://github.com/Xchristech2\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *COPYRIGHT* 」◆\n├\n├◇ © 2025-2026\n├◇ GAAJU-XMD\n├◇ All Rights Reserved.\n├\n╰───★─☆─♪♪─◆`;
+                    const activationMessage = `╭── ◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆\n\n╭──◆「 *BOT CONNECTED* 」◆\n├\n├◇ *📅 Date:* ${time.split(',')[0] || time}\n├◇ *⌚ Time:* ${time.split(', ')[1] || time}\n├◇ *✅ Status:* Online\n├◇ *💻 Version:* ${settings.version}\n├◇ *👤 Owner:* Chris Gaaju\n├◇ *📞 Contact:* +2348069675806\n├◇ *🌐 Prefix:* ${settings.prefix}\n├◇ *🔒 Mode:* ${getBotMode()}\n├◇ *💡 Commands:* ${getCommandCount()}+\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *QUICK START* 」◆\n├\n├◇ *📂 .menu*    → All commands\n├◇ *📖 .help*    → Bot guide\n├◇ *📞 .owner*   → Contact owner\n├◇ *⚙️ .settings* → Bot settings\n├◇ *📶 .ping*    → Check speed\n├◇ *🔄 .update*  → Update bot\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *CONNECT* 」◆\n├\n├◇ 💬 Support Group\n├◇ 📺 YouTube Channel\n├◇ ⭐ GitHub Repo\n├◇ 🔔 Channel Updates\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *LINKS* 」◆\n├\n├◇ *🔗 Channel:* ${global.channelLink}\n├\n├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/CNnuqSAY1r5FtXfLYo7sDN?mode=hqrt1'}\n├\n├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}\n├\n├◇ *⭐ GitHub:* https://github.com/Xchristech2\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *COPYRIGHT* 」◆\n├\n├◇ © 2025-2026\n├◇ GAAJU-XMD\n├◇ All Rights Reserved.\n├\n╰───★─☆─♪♪─◆`;
                     let img; const ip = path.join(__dirname, 'assets', 'bot_image.jpg');
                     if (fs.existsSync(ip)) img = fs.readFileSync(ip); else { try { const r = await fetch('https://raw.githubusercontent.com/Xchristech2/GAAJU-XMD/main/assets/bot_image.jpg'); if (r.ok) img = await r.buffer(); } catch (e) {} }
                     if (img) await XeonBotInc.sendMessage(botNumber, { image: img, caption: activationMessage, contextInfo: { forwardingScore: 999, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363406588763460@newsletter', newsletterName: '\u200E', serverMessageId: -1 } } });
-                    else await XeonBotInc.sendMessage(botNumber, { text: activationMessage, contextInfo: { forwardingScore: 999, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363420618370733@newsletter', newsletterName: '\u200E', serverMessageId: -1 } } });
+                    else await XeonBotInc.sendMessage(botNumber, { text: activationMessage, contextInfo: { forwardingScore: 999, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363423879817556@newsletter', newsletterName: '\u200E', serverMessageId: -1 } } });
                 } catch (e) {}
                 console.log(chalk.green('Bot Connected!'));
             }
