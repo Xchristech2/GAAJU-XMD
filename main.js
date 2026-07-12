@@ -1,6 +1,6 @@
 //════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
 //                                                                                                                                                                                        //
-//                                                             GAAJU-X𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
 //                                                                                                                                                                                        //
 //                                                                  𝐕 : 1.0.0                                                                                                             //
 //                                                                                                                                                                                        //
@@ -35,6 +35,8 @@
 // ⛥┌┤
 // */
 // 🧹 Fix for ENOSPC / temp overflow in hosted panels
+const log = (...args) => process.stderr.write(args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ') + '\n');
+
 const fs = require('fs');
 const path = require('path');
 
@@ -59,7 +61,7 @@ process.env.TMP = customTemp;
         const filePath = path.join(dataDir, file);
         if (!fs.existsSync(filePath)) {
             fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
-            console.log(`📁 Auto-created: ${file}`);
+            log(`📁 Auto-created: ${file}`);
         }
     }
 })();
@@ -76,7 +78,7 @@ setInterval(() => {
       });
     }
   });
-  console.log('🧹 Temp folder auto-cleaned');
+  log('🧹 Temp folder auto-cleaned');
 }, 3 * 60 * 60 * 1000);
 
 // At the top
@@ -253,7 +255,7 @@ const userInfoCommand = require('./commands/userinfo');
 const gptCommand = require('./commands/gpt');
 const codeCommand = require('./commands/code');
 const summariseCommand = require('./commands/summarise');
-
+const subscribeCommand = require('./commands/subscribe');
 
 
 // Global settings
@@ -313,9 +315,10 @@ async function handleMessages(sock, messageUpdate, printLog) {
         
         let chatId = message.key.remoteJid;
 const isGroup = chatId ? chatId.endsWith('@g.us') : false;
+const isStatus = chatId === 'status@broadcast';
 
 // 🔧 LID FIX: use the real sendable JID for private LID-addressed chats
-if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt) {
+if (!isGroup && !isStatus && message.key.addressingMode === 'lid' && message.key.remoteJidAlt) {
     chatId = message.key.remoteJidAlt;
 }
         
@@ -330,7 +333,7 @@ if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt
 
         // Cache LID → real phone mapping for antiforeign
         if (!isGroup && message.key.remoteJid?.endsWith('@lid')) {
-            console.log('🔍 LID KEY:', JSON.stringify(message.key));
+            log('🔍 LID KEY:', JSON.stringify(message.key));
             try {
                 const store = require('./lib/lightweight_store');
                 const realJid = message.key.participant || 
@@ -339,7 +342,7 @@ if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt
                                 null;
                 if (realJid?.includes('@s.whatsapp.net')) {
                     store.contacts[message.key.remoteJid] = { id: realJid };
-                    console.log(`📌 Cached LID: ${message.key.remoteJid} → ${realJid}`);
+                    log(`📌 Cached LID: ${message.key.remoteJid} → ${realJid}`);
                 }
             } catch (e) {}
         }
@@ -369,15 +372,15 @@ if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt
         const senderIsOwnerOrSudo = await isOwnerOrSudo(senderId, sock, chatId);
 
         // 🔥 AGGRESSIVE DEBUG
-        console.log('═══════════════════════════════════════');
-        console.log('📨 MESSAGE DEBUG');
-        console.log('├ chatId:', chatId);
-        console.log('├ isGroup:', isGroup);
-        console.log('├ fromMe:', message.key.fromMe);
-        console.log('├ senderId:', senderId);
-        console.log('├ isSudo:', senderIsSudo);
-        console.log('├ isOwnerOrSudo:', senderIsOwnerOrSudo);
-        console.log('═══════════════════════════════════════');
+        log('═══════════════════════════════════════');
+        log('📨 MESSAGE DEBUG');
+        log('├ chatId:', chatId);
+        log('├ isGroup:', isGroup);
+        log('├ fromMe:', message.key.fromMe);
+        log('├ senderId:', senderId);
+        log('├ isSudo:', senderIsSudo);
+        log('├ isOwnerOrSudo:', senderIsOwnerOrSudo);
+        log('═══════════════════════════════════════');
 
         // Handle button responses
         if (message.message?.buttonsResponseMessage) {
@@ -385,7 +388,7 @@ if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt
   
             if (buttonId === 'channel') {
                 await sock.sendMessage(chatId, { 
-                    text: '📢 *Join our Channel:*\nhttps://whatsapp.com/channel/0029VbBvGgyFsn0alyIDjw0z' 
+                    text: '📢 *Join our Channel:*\nhttps://whatsapp.com/channel/0029Vb64CFeHFxP6SQN1VY0I' 
                 }, { quoted: message });
                 return;
             } else if (buttonId === 'owner') {
@@ -394,7 +397,7 @@ if (!isGroup && message.key.addressingMode === 'lid' && message.key.remoteJidAlt
                 return;
             } else if (buttonId === 'support') {
                 await sock.sendMessage(chatId, { 
-                    text: `🔗 *Support*\n\nhttps://chat.whatsapp.com/H7PGBxWCtvy1bPy2OrTjlT?mode=wwt` 
+                    text: `🔗 *Support*\n\nhttps://chat.whatsapp.com/KWr561NJbHGGrT8YCSRibi?mode=wwt` 
                 }, { quoted: message });
                 return;
             }
@@ -447,14 +450,14 @@ if (!isCommand) {
         const rawText = commandWithoutPrefix;
 
         // 🔥 COMMAND DEBUG
-        console.log('═══════════════════════════════════════');
-        console.log('🔧 COMMAND PARSED');
-        console.log('├ userMessage:', userMessage);
-        console.log('├ rawText:', rawText);
-        console.log('├ chatId (for reply):', chatId);
-        console.log('═══════════════════════════════════════');
+        log('═══════════════════════════════════════');
+        log('🔧 COMMAND PARSED');
+        log('├ userMessage:', userMessage);
+        log('├ rawText:', rawText);
+        log('├ chatId (for reply):', chatId);
+        log('═══════════════════════════════════════');
 
-        console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${commandWithoutPrefix} (prefix: ${currentPrefix || 'none'})`);
+        log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${commandWithoutPrefix} (prefix: ${currentPrefix || 'none'})`);
 
         // Read bot mode once
         let isPublic = true;
@@ -462,18 +465,18 @@ if (!isCommand) {
             const data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
             if (typeof data.isPublic === 'boolean') isPublic = data.isPublic;
         } catch (error) {
-            console.error('Error checking access mode:', error);
+            log('Error checking access mode:', error);
         }
         
         const isOwnerOrSudoCheck = message.key.fromMe || senderIsOwnerOrSudo;
         
         // 🔥 ACCESS CHECK DEBUG
-        console.log('═══════════════════════════════════════');
-        console.log('🔒 ACCESS CHECK');
-        console.log('├ isPublic:', isPublic);
-        console.log('├ isOwnerOrSudoCheck:', isOwnerOrSudoCheck);
-        console.log('├ willExecute:', isPublic || isOwnerOrSudoCheck);
-        console.log('═══════════════════════════════════════');
+        log('═══════════════════════════════════════');
+        log('🔒 ACCESS CHECK');
+        log('├ isPublic:', isPublic);
+        log('├ isOwnerOrSudoCheck:', isOwnerOrSudoCheck);
+        log('├ willExecute:', isPublic || isOwnerOrSudoCheck);
+        log('═══════════════════════════════════════');
 
         // Check if user is banned
         if (isBanned(senderId) && !userMessage.startsWith('.unban')) {
@@ -510,7 +513,7 @@ if (!isCommand) {
 
         // In private mode, only owner/sudo can run commands
         if (!isPublic && !isOwnerOrSudoCheck) {
-            console.log('⛔ BLOCKED: Private mode + not owner/sudo');
+            log('⛔ BLOCKED: Private mode + not owner/sudo');
             return;
         }
 
@@ -660,7 +663,7 @@ try {
         data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
     }
 } catch (error) {
-    console.error('Error reading access mode:', error);
+    log('Error reading access mode:', error);
     data = { isPublic: true };
     try { fs.writeFileSync('./data/messageCount.json', JSON.stringify(data, null, 2)); } catch (e) {}
 }
@@ -774,14 +777,14 @@ try {
             }
         }, { quoted: message });
     } catch (error) {
-        console.error('Error updating access mode:', error);
+        log('Error updating access mode:', error);
         await sock.sendMessage(chatId, {
             text: '❌ Failed to update bot access mode',
             contextInfo: {
                 forwardingScore: 1,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363406588763460@newsletter',
+                    newsletterJid: '120363420618370733@newsletter',
                     newsletterName: 'GAAJU-XMD',
                     serverMessageId: -1
                 }
@@ -1199,7 +1202,7 @@ case userMessage === '.confighelp':
                             botMode = isPublic ? 'Public' : 'Private';
                         }
                     } catch (error) {
-                        console.error('Error reading bot mode:', error);
+                        log('Error reading bot mode:', error);
                         botMode = 'Public (error reading)';
                     }
                     
@@ -1247,7 +1250,7 @@ case userMessage === '.confighelp':
                                  `• Last Update Check: ${lastCheckTime}\n` +
                                  `• Update Available: ${updateStatus.updateAvailable ? 'Yes 🟢' : 'No ✅'}\n\n` +
                                  `🔗 *Links:*\n` +
-                                 `• GitHub: https://github.com/Xchristech2/GAAJU-XMD\n` +
+                                 `• GitHub: https://github.com/Xchristech2/GAAJU-MXD\n` +
                                  `• YouTube: https://youtube.com/@Xchristech\n` +
                                  `• Channel: ${global.channelLink}\n\n` +
                                  `📌 *Update Commands:*\n` +
@@ -1278,13 +1281,9 @@ case userMessage.startsWith('.unblock'):
     await unblockCommand(sock, chatId, message);
     commandExecuted = true;
     break;
-            case userMessage === '.git':
-            case userMessage === '.github':
-            case userMessage === '.sc':
             case userMessage === '.script':
-            case userMessage === '.repo':
-                await githubCommand(sock, chatId, message);
-                break;
+    await githubCommand(sock, chatId, message);
+    break;
           case userMessage.startsWith('.poll'):
     await pollCommand(sock, chatId, message);
     commandExecuted = true;
@@ -1467,14 +1466,14 @@ case userMessage.startsWith('.autorecord'):
                 await textmakerCommand(sock, chatId, message, userMessage, 'fire');
                 break;
             case userMessage.startsWith('.antidelete'):
-    console.log('🔍 Antidelete command detected');
+    log('🔍 Antidelete command detected');
     const antideleteArgs = userMessage.slice(11).trim().split(' ');
-    console.log('📦 Args:', antideleteArgs);
+    log('📦 Args:', antideleteArgs);
     try {
         await handleAntideleteCommand(sock, chatId, message, antideleteArgs);
-        console.log('✅ Antidelete command executed');
+        log('✅ Antidelete command executed');
     } catch (error) {
-        console.error('❌ Antidelete error:', error);
+        log('❌ Antidelete error:', error);
     }
     commandExecuted = true;
     break;
@@ -1761,6 +1760,10 @@ case userMessage.startsWith('.autorecord'):
     await summariseCommand(sock, chatId, message);
     commandExecuted = true;
     break;
+        case userMessage === '.subscribe':
+    await subscribeCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
                 default:
     if (userMessage && chatId !== 'status@broadcast') {
         await handleChatbotResponse(sock, chatId, message, userMessage, senderId);
@@ -1773,10 +1776,10 @@ case userMessage.startsWith('.autorecord'):
     break;
 }
 
-        console.log('📤 SWITCH END. commandExecuted:', commandExecuted);
+        log('📤 SWITCH END. commandExecuted:', commandExecuted);
 
         if (commandExecuted !== false) {
-            console.log('✅ Command executed, showing typing indicator');
+            log('✅ Command executed, showing typing indicator');
             await showTypingAfterCommand(sock, chatId);
         }
 
@@ -1784,7 +1787,7 @@ case userMessage.startsWith('.autorecord'):
             await addCommandReaction(sock, message);
         }
     } catch (error) {
-        console.error('*❌ Error in message handler:*', error.message);
+        log('*❌ Error in message handler:*', error.message);
         if (chatId) {
             await sock.sendMessage(chatId, {
                 text: '*❌ Failed to process command!*',
@@ -1842,12 +1845,12 @@ async function handleGroupParticipantUpdate(sock, update) {
             await handleLeaveEvent(sock, id, participants);
         }
     } catch (error) {
-        console.error('Error in handleGroupParticipantUpdate:', error);
+        log('Error in handleGroupParticipantUpdate:', error);
     }
 }
 
 process.on('SIGINT', async () => {
-    console.log('🛑 Shutting down...');
+    log('🛑 Shutting down...');
     try {
         const autorecord = require('./commands/autorecord');
         autorecord.stopAllInfiniteRecordings();
@@ -1856,7 +1859,7 @@ process.on('SIGINT', async () => {
         const autotyping = require('./commands/autotyping');
         autotyping.stopAllInfiniteTyping();
     } catch (e) {}
-    console.log('✅ Cleanup complete');
+    log('✅ Cleanup complete');
     process.exit(0);
 });
 
