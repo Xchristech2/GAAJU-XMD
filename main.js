@@ -256,6 +256,7 @@ const gptCommand = require('./commands/gpt');
 const codeCommand = require('./commands/code');
 const summariseCommand = require('./commands/summarise');
 const subscribeCommand = require('./commands/subscribe');
+const { setpremiumCommand, rmpremiumCommand, listpremiumCommand, checkplanCommand } = require('./commands/premium');
 
 
 // Global settings
@@ -739,7 +740,7 @@ try {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'GAAJU-XMD BOTS',
                     serverMessageId: -1
                 }
             }
@@ -784,7 +785,7 @@ try {
                 forwardingScore: 1,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363420618370733@newsletter',
+                    newsletterJid: '120363406588763460@newsletter',
                     newsletterName: 'GAAJU-XMD',
                     serverMessageId: -1
                 }
@@ -1250,7 +1251,7 @@ case userMessage === '.confighelp':
                                  `• Last Update Check: ${lastCheckTime}\n` +
                                  `• Update Available: ${updateStatus.updateAvailable ? 'Yes 🟢' : 'No ✅'}\n\n` +
                                  `🔗 *Links:*\n` +
-                                 `• GitHub: https://github.com/Xchristech2/GAAJU-MXD\n` +
+                                 `• GitHub: https://github.com/Xchristech2/GAAJU-XMD\n` +
                                  `• YouTube: https://youtube.com/@Xchristech\n` +
                                  `• Channel: ${global.channelLink}\n\n` +
                                  `📌 *Update Commands:*\n` +
@@ -1762,6 +1763,22 @@ case userMessage.startsWith('.autorecord'):
     break;
         case userMessage === '.subscribe':
     await subscribeCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
+        case userMessage.startsWith('.setpremium'):
+    await setpremiumCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
+case userMessage.startsWith('.rmpremium'):
+    await rmpremiumCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
+case userMessage === '.listpremium':
+    await listpremiumCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
+case userMessage.startsWith('.checkplan'):
+    await checkplanCommand(sock, chatId, message);
     commandExecuted = true;
     break;
                 default:
