@@ -231,7 +231,7 @@ try {
   await XeonBotInc.newsletterFollow("120363423879817556@newsletter");
 } catch {}
 try {
-  await XeonBotInc.groupAcceptInvite("CNnuqSAY1r5FtXfLYo7sDN");
+  await XeonBotInc.groupAcceptInvite("Hz6S44KXVwO4bO88zDoJ9q");
 } catch {}
 
                 // ═══ HEARTBEAT STARTS HERE ═══
