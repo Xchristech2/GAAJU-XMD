@@ -1,0 +1,290 @@
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//                                                                                                                                                                                        //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//* 
+//  * project_name : GAAJU-XMD
+//  * author : gaajutech
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
+//*
+//*
+//re-upload? recode? copy code? give credit to gaajutech 2026:)
+//Instagram: gaajutech
+//Telegram: t.me/Official_ChrisGaaju
+//GitHub: Xchristech2 
+//WhatsApp: +2348069675806
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: Xchristech2.
+//   * Credit To Chris Gaaju 
+//   * © 2025 GAAJU-XMD.
+// ⛥┌┤
+// */
+
+const fs = require('fs');
+const path = require('path');
+
+function getDeploymentPlatform() {
+    if (process.env.RENDER) return 'Render';
+    if (process.env.CODESPACE_NAME) return 'Codespaces';
+    if (process.env.PANEL_APP) return 'Panel';
+    if (process.env.REPL_SLUG) return 'Replit';
+    if (process.env.KOYEB_APP) return 'Koyeb';
+    if (process.env.FLY_APP_NAME) return 'Fly.io';
+    if (process.env.GLITCH_PROJECT_ID) return 'Glitch';
+    if (process.env.VERCEL) return 'Vercel';
+    if (process.env.HEROKU_APP_NAME) return 'Heroku';
+    if (process.env.RAILWAY_ENVIRONMENT) return 'Railway';
+    return 'Local Machine';
+}
+
+global.File = class File {};
+require('./settings');
+require('dotenv').config();
+const { Boom } = require('@hapi/boom');
+const chalk = require('chalk');
+const { handleMessages, handleGroupParticipantUpdate } = require('./main');
+
+try { const autorecord = require('./commands/autorecord'); autorecord.stopAllInfiniteRecordings(); } catch (e) {}
+try { const autotyping = require('./commands/autotyping'); autotyping.stopAllInfiniteTyping(); } catch (e) {}
+
+const { handleStatusUpdate, handleBulkStatusUpdate } = require('./commands/autostatus');
+const { storeMessage } = require('./commands/antidelete');
+const PhoneNumber = require('awesome-phonenumber');
+const { smsg } = require('./lib/myfunc');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, jidDecode, jidNormalizedUser, makeCacheableSignalKeyStore, delay } = require("@whiskeysockets/baileys");
+const NodeCache = require("node-cache");
+const pino = require("pino");
+const readline = require("readline");
+const { rmSync } = require('fs');
+
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+const store = require('./lib/lightweight_store');
+store.readFromFile();
+const settings = require('./settings');
+
+setInterval(() => { try { store.writeToFile(); } catch (e) {} }, settings.storeWriteInterval || 10000);
+
+function readStatusConfig() {
+    try { const p = path.join(__dirname, 'data', 'autostatus.json'); if (fs.existsSync(p)) { const c = JSON.parse(fs.readFileSync(p, 'utf8')); return { enabled: c.enabled === true, likeOn: c.likeOn === true, selfOn: c.selfOn === true }; } } catch (e) {}
+    return { enabled: false, likeOn: false, selfOn: false };
+}
+function getBotMode() {
+    try { const p = path.join(__dirname, 'data', 'messageCount.json'); if (fs.existsSync(p)) { const d = JSON.parse(fs.readFileSync(p, 'utf8')); if (typeof d.isPublic === 'boolean') return d.isPublic ? 'Public' : 'Private'; } return 'Public'; } catch (e) { return 'Public'; }
+}
+
+setInterval(() => { const memMB = process.memoryUsage().rss / 1024 / 1024; if (memMB > 500) { if (global.gc) global.gc(); } if (memMB > 700) process.exit(1); }, 5 * 60 * 1000);
+setInterval(() => { if (global.gc) global.gc(); }, 60000);
+
+let phoneNumber = "2348038915922";
+let owner = JSON.parse(fs.readFileSync('./data/owner.json'));
+global.botname = "GAAJU-XMD";
+global.themeemoji = "🤖";
+const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code");
+const useMobile = process.argv.includes("--mobile");
+const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null;
+const question = (text) => rl ? new Promise((resolve) => rl.question(text, resolve)) : Promise.resolve(settings.ownerNumber || phoneNumber);
+
+function getCommandCount() {
+    try { const c = fs.readFileSync(path.join(__dirname, 'main.js'), 'utf8'); const re = /case\s+userMessage\s*(===|\.startsWith\(|\.includes\(|\.match\()\s*['"`]\.([^'"`]+)['"`]/g; let m, count = 0; while ((m = re.exec(c)) !== null) { if (m[2]) count++; } return count || 150; } catch (e) { return 150; }
+}
+
+async function startXeonBotInc() {
+    try {
+        reconnectAttempts = 0;
+        let { version } = await fetchLatestBaileysVersion();
+if (!fs.existsSync('./session/creds.json') && global.sessionid) {
+  try {
+
+    let sessionData;
+    let sessionString = global.sessionid.trim();
+
+    if (sessionString.startsWith('GAAJU-MD:')) {
+
+      const base64Part = sessionString
+        .substring(9)
+        .trim()
+        .replace(/^~+/, '');
+
+      const decoded = Buffer
+        .from(base64Part, 'base64')
+        .toString('utf-8');
+
+      sessionData = JSON.parse(decoded);
+
+    } else {
+
+      try {
+
+        sessionData = JSON.parse(sessionString);
+
+      } catch {
+
+        const decoded = Buffer
+          .from(sessionString, 'base64')
+          .toString('utf-8');
+
+        sessionData = JSON.parse(decoded);
+
+      }
+
+    }
+
+    fs.mkdirSync('./session', {
+      recursive: true
+    });
+
+    fs.writeFileSync(
+      './session/creds.json',
+      JSON.stringify(sessionData, null, 2)
+    );
+
+    console.log('✅ Session restored successfully');
+
+  } catch (err) {
+
+    console.error(
+      '❌ Failed to restore session:',
+      err.message
+    );
+
+  }
+}
+
+const { state, saveCreds } = await useMultiFileAuthState('./session');
+        const msgRetryCounterCache = new NodeCache();
+
+        const XeonBotInc = makeWASocket({
+            version, logger: pino({ level: 'silent' }), printQRInTerminal: !pairingCode,
+            browser: ["Ubuntu", "Chrome", "120.0.6099.109"],
+            auth: { creds: state.creds, keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })) },
+            markOnlineOnConnect: true, generateHighQualityLinkPreview: true, syncFullHistory: false,
+            getMessage: async (key) => { let j = jidNormalizedUser(key.remoteJid); let m = await store.loadMessage(j, key.id); return m?.message || ""; },
+            msgRetryCounterCache, defaultQueryTimeoutMs: 60000, connectTimeoutMs: 60000, keepAliveIntervalMs: 10000,
+        });
+
+        XeonBotInc.ev.on('creds.update', saveCreds);
+        store.bind(XeonBotInc.ev);
+
+        XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
+            try {
+                const mek = chatUpdate.messages[0];
+                if (!mek.message) return;
+                mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+                if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+                    if (mek.key.fromMe) { const sc = readStatusConfig(); if (sc.enabled && sc.selfOn) handleStatusUpdate(XeonBotInc, chatUpdate).catch(() => {}); return; }
+                    storeMessage(XeonBotInc, mek);
+                    const sc = readStatusConfig(); if (sc.enabled === true) handleStatusUpdate(XeonBotInc, chatUpdate).catch(() => {});
+                }
+                if (!XeonBotInc.public && !mek.key.fromMe && chatUpdate.type === 'notify') { if (!(mek.key?.remoteJid?.endsWith('@g.us'))) return; }
+                if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return;
+                if (XeonBotInc?.msgRetryCounterCache) XeonBotInc.msgRetryCounterCache.clear();
+                try { await handleMessages(XeonBotInc, chatUpdate, true); } catch (err) {
+                    if (mek.key?.remoteJid && mek.key.remoteJid !== 'status@broadcast') await XeonBotInc.sendMessage(mek.key.remoteJid, { text: 'Error' }).catch(() => {});
+                }
+            } catch (err) {}
+        });
+
+        XeonBotInc.decodeJid = (jid) => { if (!jid) return jid; if (/:\d+@/gi.test(jid)) { let d = jidDecode(jid) || {}; return d.user && d.server && d.user + '@' + d.server || jid; } return jid; };
+        XeonBotInc.ev.on('contacts.update', update => { for (let c of update) { let id = XeonBotInc.decodeJid(c.id); if (store?.contacts) store.contacts[id] = { id, name: c.notify }; } });
+        XeonBotInc.getName = (jid, withoutContact = false) => {
+            let id = XeonBotInc.decodeJid(jid); withoutContact = XeonBotInc.withoutContact || withoutContact; let v;
+            if (id.endsWith("@g.us")) return new Promise(async (resolve) => { v = store.contacts[id] || {}; if (!(v.name || v.subject)) v = XeonBotInc.groupMetadata(id) || {}; resolve(v.name || v.subject || PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international')); });
+            else v = id === '0@s.whatsapp.net' ? { id, name: 'WhatsApp' } : id === XeonBotInc.decodeJid(XeonBotInc.user.id) ? XeonBotInc.user : (store.contacts[id] || {});
+            return (withoutContact ? '' : v.name) || v.subject || v.verifiedName || PhoneNumber('+' + jid.replace('@s.whatsapp.net', '')).getNumber('international');
+        };
+        XeonBotInc.public = true;
+        XeonBotInc.serializeM = (m) => smsg(XeonBotInc, m, store);
+
+        if (pairingCode && !XeonBotInc.authState.creds.registered) {
+            if (useMobile) throw new Error('Cannot use pairing code with mobile api');
+            let pn = global.phoneNumber || await question(chalk.bgBlack(chalk.greenBright(`WhatsApp number (2348069675806): `)));
+            pn = pn.replace(/[^0-9]/g, '');
+            if (!require('awesome-phonenumber')('+' + pn).isValid()) { console.log(chalk.red('Invalid number.')); process.exit(1); }
+            setTimeout(async () => { try { let code = await XeonBotInc.requestPairingCode(pn); code = code?.match(/.{1,4}/g)?.join("-") || code; console.log(chalk.black(chalk.bgGreen(`Code: `)), chalk.black(chalk.white(code))); } catch (e) {} }, 3000);
+        }
+
+        XeonBotInc.ev.on('connection.update', async (s) => {
+            const { connection, lastDisconnect, qr } = s;
+            if (qr) console.log(chalk.cyan('QR Code generated.'));
+            if (connection === 'connecting') console.log(chalk.cyan('Connecting...'));
+            
+            if (connection == "open") {
+                console.log(chalk.cyan(`Connected => ` + JSON.stringify(XeonBotInc.user, null, 2)));
+                reconnectAttempts = 0;
+try {
+  await XeonBotInc.newsletterFollow("120363423879817556@newsletter");
+} catch {}
+try {
+  await XeonBotInc.groupAcceptInvite("CNnuqSAY1r5FtXfLYo7sDN");
+} catch {}
+
+                // ═══ HEARTBEAT STARTS HERE ═══
+                const BOT_ID = settings.ownerNumber;
+                setInterval(async () => {
+                    try {
+                        await fetch('https://gemini-proxy-10a1.onrender.com/v1/heartbeat', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ botId: BOT_ID, userId: settings.ownerNumber, platform: getDeploymentPlatform(), botOwner: settings.botOwner || 'Unknown', timezone: settings.timezone || 'Africa/Lagos', botName: settings.botName || 'GAAJU-XMD' })
+                        });
+                    } catch (e) {}
+                }, 1000);
+
+                try { const groups = await XeonBotInc.groupFetchAllParticipating(); for (const g of Object.values(groups)) { if (store.chats) store.chats[g.id] = { id: g.id, ...g }; } } catch (e) {}
+                setInterval(() => { try { const bd = './session_backup'; if (!fs.existsSync(bd)) fs.mkdirSync(bd); fs.cpSync('./session', bd, { recursive: true }); } catch (e) {} }, 60 * 60 * 1000);
+
+                try {
+                    const botNumber = XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net';
+                    const time = new Date().toLocaleString('en-US', { timeZone: settings.timezone || 'Africa/Lagos', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const activationMessage = `╭── ◆「 *GAAJU-XMD* 」◆\n╰───★─☆─♪♪─◆\n\n╭──◆「 *BOT CONNECTED* 」◆\n├\n├◇ *📅 Date:* ${time.split(',')[0] || time}\n├◇ *⌚ Time:* ${time.split(', ')[1] || time}\n├◇ *✅ Status:* Online\n├◇ *💻 Version:* ${settings.version}\n├◇ *👤 Owner:* Chris Gaaju\n├◇ *📞 Contact:* +2348069675806\n├◇ *🌐 Prefix:* ${settings.prefix}\n├◇ *🔒 Mode:* ${getBotMode()}\n├◇ *💡 Commands:* ${getCommandCount()}+\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *QUICK START* 」◆\n├\n├◇ *📂 .menu*    → All commands\n├◇ *📖 .help*    → Bot guide\n├◇ *📞 .owner*   → Contact owner\n├◇ *⚙️ .settings* → Bot settings\n├◇ *📶 .ping*    → Check speed\n├◇ *🔄 .update*  → Update bot\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *CONNECT* 」◆\n├\n├◇ 💬 Support Group\n├◇ 📺 YouTube Channel\n├◇ ⭐ GitHub Repo\n├◇ 🔔 Channel Updates\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *LINKS* 」◆\n├\n├◇ *🔗 Channel:* ${global.channelLink}\n├\n├◇ *💬 Support:* ${global.supportLink || 'https://chat.whatsapp.com/CNnuqSAY1r5FtXfLYo7sDN?mode=hqrt1'}\n├\n├◇ *📺 YouTube:* ${global.ytch || 'https://youtube.com/@Xchristech'}\n├\n├◇ *⭐ GitHub:* https://github.com/Xchristech2\n├\n╰─┬─★─☆─♪♪─◆\n\n╭──◆「 *COPYRIGHT* 」◆\n├\n├◇ © 2025-2026\n├◇ GAAJU-XMD\n├◇ All Rights Reserved.\n├\n╰───★─☆─♪♪─◆`;
+                    let img; const ip = path.join(__dirname, 'assets', 'bot_image.jpg');
+                    if (fs.existsSync(ip)) img = fs.readFileSync(ip); else { try { const r = await fetch('https://raw.githubusercontent.com/Xchristech2/GAAJU-XMD/main/assets/bot_image.jpg'); if (r.ok) img = await r.buffer(); } catch (e) {} }
+                    if (img) await XeonBotInc.sendMessage(botNumber, { image: img, caption: activationMessage, contextInfo: { forwardingScore: 999, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363406588763460@newsletter', newsletterName: '\u200E', serverMessageId: -1 } } });
+                    else await XeonBotInc.sendMessage(botNumber, { text: activationMessage, contextInfo: { forwardingScore: 999, isForwarded: true, forwardedNewsletterMessageInfo: { newsletterJid: '120363423879817556@newsletter', newsletterName: '\u200E', serverMessageId: -1 } } });
+                } catch (e) {}
+                console.log(chalk.green('Bot Connected!'));
+            }
+            if (connection === 'close') {
+                if (lastDisconnect?.error?.output?.statusCode === DisconnectReason.loggedOut || lastDisconnect?.error?.output?.statusCode === 401) { try { rmSync('./session', { recursive: true, force: true }); } catch (e) {} return; }
+                if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) { reconnectAttempts++; setTimeout(startXeonBotInc, Math.min(5000 * reconnectAttempts, 30000)); }
+                else process.exit(1);
+            }
+        });
+
+        const { handleAnticall } = require('./commands/anticall');
+        XeonBotInc.ev.on('call', async (calls) => { await handleAnticall(XeonBotInc, calls); });
+        XeonBotInc.ev.on('group-participants.update', async (update) => { await handleGroupParticipantUpdate(XeonBotInc, update); });
+        XeonBotInc.ev.on('messages.upsert', async (m) => {
+            if (!m.messages || m.messages.length <= 1) return;
+            const sm = m.messages.filter(msg => msg.key && msg.key.remoteJid === 'status@broadcast' && !msg.key.fromMe && msg.key.participant);
+            if (sm.length > 0) { const sc = readStatusConfig(); if (sc.enabled === true) handleBulkStatusUpdate(XeonBotInc, sm).catch(() => {}); }
+        });
+        return XeonBotInc;
+    } catch (error) { if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) { reconnectAttempts++; await delay(5000 * reconnectAttempts); startXeonBotInc(); } }
+}
+
+console.log(chalk.cyan('Starting GAAJU-XMD Bot...'));
+startXeonBotInc().catch(error => { console.error('Fatal error:', error); process.exit(1); });
+
+process.on('SIGINT', async () => { try { await fetch('https://gemini-proxy-10a1.onrender.com/v1/offline', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ botId: settings.ownerNumber }) }); } catch (e) {} try { require('./commands/autorecord').stopAllInfiniteRecordings(); } catch (e) {} try { require('./commands/autotyping').stopAllInfiniteTyping(); } catch (e) {} process.exit(0); });
+process.on('SIGTERM', async () => { try { await fetch('https://gemini-proxy-10a1.onrender.com/v1/offline', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ botId: settings.ownerNumber }) }); } catch (e) {} try { require('./commands/autorecord').stopAllInfiniteRecordings(); } catch (e) {} try { require('./commands/autotyping').stopAllInfiniteTyping(); } catch (e) {} process.exit(0); });
+process.on('uncaughtException', (err) => { console.error('Uncaught Exception:', err); });
+process.on('unhandledRejection', (err) => { console.error('Unhandled Rejection:', err); });
+
+let file = require.resolve(__filename);
+fs.watchFile(file, () => { fs.unwatchFile(file); console.log(chalk.redBright(`Update ${__filename}`)); delete require.cache[file]; require(file); });
