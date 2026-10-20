@@ -34,6 +34,42 @@
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//                                                                                                                                                                                        //
+//                                                             𝐖𝐀𝐋𝐋𝐘𝐉𝐀𝐘𝐓𝐄𝐂𝐇-𝐌𝐃 𝐁𝐎𝐓                                                                                                     //
+//                                                                                                                                                                                        //
+//                                                                  𝐕 : 1.0.0                                                                                                             //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//                ██╗    ██╗ █████╗ ██╗     ██╗  ██╗   ██╗   ██╗ █████╗ ██╗   ██╗████████╗███████╗ ██████╗██╗  ██╗      ███╗   ███╗██████╗                                 //
+//                ██║    ██║██╔══██╗██║     ██║  ╚██╗ ██╔╝   ██║██╔══██╗╚██╗ ██╔╝╚══██╔══╝██╔════╝██╔════╝██║  ██║      ████╗ ████║██╔══██╗                              //
+//                ██║ █╗ ██║███████║██║     ██║   ╚████╔╝    ██║███████║ ╚████╔╝    ██║   █████╗  ██║     ███████║█████╗██╔████╔██║██║  ██║                               //
+//                ██║███╗██║██╔══██║██║     ██║    ╚██╔╝██   ██║██╔══██║  ╚██╔╝     ██║   ██╔══╝  ██║     ██╔══██║╚════╝██║╚██╔╝██║██║  ██║                               //
+//                ╚███╔███╔╝██║  ██║███████╗███████╗██║ ╚█████╔╝██║  ██║   ██║      ██║   ███████╗╚██████╗██║  ██║      ██║ ╚═╝ ██║██████╔╝                              //
+//                 ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚════╝ ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚══════╝ ╚═════╝╚═╝  ╚═╝      ╚═╝     ╚═╝╚═════╝                                 //
+//                                                                                                                                                                                        //
+//                                                                 𝐂𝐎𝐏𝐘𝐑𝐈𝐆𝐇𝐓 2025                                                                                                        //
+//                                                                                                                                                                                        //
+//                                                                                                                                                                                        //
+//════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════//
+//* 
+//  * project_name : GAAJU-XMD
+//  * author : gaajutech
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
+//*
+//*
+//re-upload? recode? copy code? give credit to gaajutech 2026:)
+//Instagram: gaajutech
+//Telegram: t.me/Official_ChrisGaaju
+//GitHub: Xchristech2 
+//WhatsApp: +2348069675806
+//want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
+//   * Created By Github: Xchristech2.
+//   * Credit To Chris Gaaju 
+//   * © 2025 GAAJU-XMD.
+// ⛥┌┤
+// */
 
 //══════════════════════════════════════════════════════════//
 //                       GAAJU-XMD MENU                     //
@@ -157,14 +193,12 @@ function formatTime(seconds) {
 function getSystemStats() {
     const totalMem = os.totalmem();
     const freeMem = os.freemem();
-
     const usedMem = totalMem - freeMem;
 
     const usagePercent = totalMem > 0
         ? Math.round((usedMem / totalMem) * 100)
         : 0;
 
-    // 12-BLOCK RAM BAR
     const barLength = 12;
 
     const filled = Math.min(
@@ -189,44 +223,9 @@ function getSystemStats() {
 }
 
 //══════════════════════════════════════════════════════════//
-//                       MENU AUDIO                         //
-//══════════════════════════════════════════════════════════//
-
-async function sendMenuAudio(sock, chatId, message) {
-    try {
-        const audioPath = path.join(
-            __dirname,
-            '../assets/menu_audio.mp3'
-        );
-
-        if (!fs.existsSync(audioPath)) {
-            return false;
-        }
-
-        await sock.sendMessage(
-            chatId,
-            {
-                audio: fs.readFileSync(audioPath),
-                mimetype: 'audio/mpeg',
-                ptt: false
-            },
-            {
-                quoted: message
-            }
-        );
-
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
-
-//══════════════════════════════════════════════════════════//
 //                       READ MORE                          //
 //══════════════════════════════════════════════════════════//
 
-// Invisible characters used to encourage WhatsApp message collapsing.
-// WhatsApp may not display four separate Read More buttons in one message.
 const READ_MORE = String.fromCharCode(8206).repeat(4000);
 
 //══════════════════════════════════════════════════════════//
@@ -328,7 +327,6 @@ const allCommandsRaw = {
                 'Ⓟ .coindaily'
             ]
         },
-
         {
             sub: '🔥 HOT',
             cmds: [
@@ -337,7 +335,6 @@ const allCommandsRaw = {
                 'Ⓕ .truth'
             ]
         },
-
         {
             sub: '🎯 TTT',
             cmds: [
@@ -345,14 +342,12 @@ const allCommandsRaw = {
                 'Ⓕ .tictactoe'
             ]
         },
-
         {
             sub: '🎲 DICE',
             cmds: [
                 'Ⓕ .dice'
             ]
         },
-
         {
             sub: '🧠 TRIVIA',
             cmds: [
@@ -360,7 +355,6 @@ const allCommandsRaw = {
                 'Ⓕ .trivia'
             ]
         },
-
         {
             sub: '💀 HANGMAN',
             cmds: [
@@ -368,7 +362,6 @@ const allCommandsRaw = {
                 'Ⓕ .hangman'
             ]
         },
-
         {
             sub: '🪦 TRAGIC',
             cmds: [
@@ -573,7 +566,9 @@ function sortCommands(commands) {
 }
 
 function cleanCommand(command) {
-    return command.replace(/^[ⓅⒻⒽⒹ]\s*/, '');
+    return command
+        .replace(/^[ⓅⒻⒽⒹ]\s*/, '')
+        .replace(/^[.!?/#-]+/, '');
 }
 
 //══════════════════════════════════════════════════════════//
@@ -593,7 +588,6 @@ function buildMenu(data) {
 
     let version = String(settings.version || '1.0.0');
 
-    // Ensure the version starts with v
     if (!version.startsWith('v')) {
         version = `v${version}`;
     }
@@ -602,20 +596,19 @@ function buildMenu(data) {
 
     let menu = '';
 
-    // TOP INFORMATION SECTION
+    // UPDATED TOP INFORMATION SECTION
     menu += `╭━━〔 *${botName}* 〕\n`;
-    menu += `┃  User    : ${userName}\n`;
-    menu += `┃  Version : ${version}\n`;
-    menu += `┃  Mode    : ${currentBotMode}\n`;
-    menu += `┃  Prefix  : ${prefix}\n`;
-    menu += `┃  Speed   : ${ping}ms\n`;
-    menu += `┃  Owner   : ${ownerName}\n`;
-    menu += `┃  Uptime  : ${systemStats.uptime}\n`;
-    menu += `┃\n`;
-    menu += `┃ ⤷ RAM : ${systemStats.bar} ${systemStats.usagePercent}%\n`;
+    menu += `┃ *User:* ${userName}\n`;
+    menu += `┃ *Version:* ${version}\n`;
+    menu += `┃ *Mode:* ${currentBotMode}\n`;
+    menu += `┃ *Prefix:* ${prefix}\n`;
+    menu += `┃ *Owner:* ${ownerName}\n`;
+    menu += `┃ *Uptime:* ${systemStats.uptime}\n`;
+    menu += `┃ *Speed:* ${ping}ms\n`;
+    menu += `┃ *RAM:* ${systemStats.bar} ${systemStats.usagePercent}%\n`;
     menu += `╰━━━━━━━━━\n\n`;
 
-    // READ MORE 1: IMMEDIATELY AFTER THE HEADER
+    // READ MORE
     menu += READ_MORE;
 
     // SORT CATEGORIES ALPHABETICALLY
@@ -628,11 +621,9 @@ function buildMenu(data) {
         }
     );
 
-    // ADDITIONAL READ MORE SEPARATORS
-    // After 2 categories, after 6 categories, and after 10 categories.
+    // READ MORE SEPARATORS
     const readMoreAfterCategories = new Set([2, 6, 10]);
 
-    // BUILD EACH CATEGORY USING YOUR EXISTING STYLE
     for (let i = 0; i < sortedCategoryNames.length; i++) {
         const title = sortedCategoryNames[i];
         const commands = allCommandsRaw[title];
@@ -660,7 +651,6 @@ function buildMenu(data) {
 
         menu += `╰━━━━━━━━━\n`;
 
-        // READ MORE 2, 3, AND 4
         if (readMoreAfterCategories.has(i + 1)) {
             menu += `\n${READ_MORE}\n`;
         } else {
@@ -668,7 +658,6 @@ function buildMenu(data) {
         }
     }
 
-    // BOTTOM TEXT
     menu += '\n> Best WhatsApp Bot';
 
     return menu.trim();
@@ -812,17 +801,6 @@ async function helpCommand(sock, chatId, message) {
                 }
             );
         }
-
-        // SEND MENU AUDIO AFTER THE MENU
-        await new Promise(resolve =>
-            setTimeout(resolve, 1000)
-        );
-
-        await sendMenuAudio(
-            sock,
-            sendChatId,
-            message
-        );
     } catch (error) {
         console.error(
             'Error in help command:',
