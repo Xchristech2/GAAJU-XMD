@@ -1,115 +1,106 @@
- const moment = require('moment-timezone');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path');
 
+const REPO_URL = 'https://github.com/Xchristech2/GAAJU-XMD';
+const API_URL = 'https://api.github.com/repos/Xchristech2/GAAJU-XMD';
+const TUTORIAL_URL = 'https://youtu.be/JV4vcawI6fI';
+
 async function githubCommand(sock, chatId, message) {
     try {
-        // Show typing indicator
         await sock.sendPresenceUpdate('composing', chatId);
 
-        const res = await fetch('https://api.github.com/repos/Xchristech2/GAAJU-XMD');
-        if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
-        
-        const json = await res.json();
-
-        // Create professional formatted message
-        let txt = `*🤖 GAAJU-XMD REPOSITORY* 🤖\n\n`;
-        txt += `📛 *Repository Name:* ${json.name || 'GAAJU-XMD'}\n`;
-        txt += `📖 *Description:* ${json.description || 'A Multi-Device WhatsApp User Bot'}\n`;
-        txt += `👁️ *Watchers:* ${json.watchers_count?.toLocaleString() || '0'}\n`;
-        txt += `💾 *Repository Size:* ${(json.size / 1024).toFixed(2)} MB\n`;
-        txt += `🕒 *Last Updated:* ${moment(json.updated_at).format('DD MMM YYYY - HH:mm:ss')}\n`;
-        txt += `🌐 *Repository URL:* ${json.html_url}\n`;
-        txt += `🔀 *Forks Count:* ${json.forks_count?.toLocaleString() || '0'}\n`;
-        txt += `⭐ *Stars Count:* ${json.stargazers_count?.toLocaleString() || '0'}\n`;
-        txt += `🐛 *Open Issues:* ${json.open_issues_count?.toLocaleString() || '0'}\n`;
-        txt += `🌿 *Default Branch:* ${json.default_branch || 'main'}\n`;
-        txt += `📄 *Language:* ${json.language || 'JavaScript'}\n\n`;
-        txt += `📊 *Repository Statistics:*\n`;
-        txt += `├─ 📈 Stars: ${json.stargazers_count?.toLocaleString() || '0'}\n`;
-        txt += `├─ 🔄 Forks: ${json.forks_count?.toLocaleString() || '0'}\n`;
-        txt += `├─ 👁️ Watchers: ${json.watchers_count?.toLocaleString() || '0'}\n`;
-        txt += `└─ 🐛 Issues: ${json.open_issues_count?.toLocaleString() || '0'}\n\n`;
-        txt += `🔗 *Quick Links:*\n`;
-        txt += `• 📂 [View Repository](${json.html_url})\n`;
-        txt += `• 🐛 [Report Issues](${json.html_url}/issues)\n`;
-        txt += `• 🎥 [Deployment Tutorial] (https://youtu.be/JV4vcawI6fI)\n\n`;
-        txt += `*© XCHRISTECH 2026 | All Rights Reserved*`;
-
-        // Try to use local asset image, fallback to repository image
-        let imageBuffer;
-        const imgPath = path.join(__dirname, '../assets/bot_image.jpg');
-        
-        if (fs.existsSync(imgPath)) {
-            imageBuffer = fs.readFileSync(imgPath);
-        } else if (json.owner?.avatar_url) {
-            // Fallback to repository owner avatar
-            const avatarRes = await fetch(json.owner.avatar_url);
-            imageBuffer = await avatarRes.buffer();
-        }
-
-        // Send message with image if available, otherwise text only
-        if (imageBuffer) {
-            await sock.sendMessage(chatId, { 
-                image: imageBuffer, 
-                caption: txt,
-                contextInfo: {
-                    forwardingScore: 1,
-                    isForwarded: true,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363406588763460@newsletter',
-                        newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
-                        serverMessageId: -1
-                    }
-                }
-            }, { quoted: message });
-        } else {
-            await sock.sendMessage(chatId, { 
-                text: txt,
-                contextInfo: {
-                    forwardingScore: 1,
-                    isForwarded: true,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterJid: '120363406588763460@newsletter',
-                        newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
-                        serverMessageId: -1
-                    }
-                }
-            }, { quoted: message });
-        }
-
-        console.log('✅ GitHub repository info sent successfully');
-
-    } catch (error) {
-        console.error('❌ Error in github command:', error);
-        
-        await sock.sendMessage(chatId, { 
-            text: `*❌ GITHUB REPOSITORY ERROR*\n\nFailed to fetch repository information.\n\n*Error Details:* ${error.message}\n\nPlease try again later or check the repository manually:\nhttps://github.com/Xchristech2/GAAJU-XMD`,
-            contextInfo: {
-                forwardingScore: 1,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
-                    serverMessageId: -1
-                }
+        const res = await fetch(API_URL, {
+            headers: {
+                'User-Agent': 'GAAJU-XMD'
             }
-        }, { quoted: message });
-    }
-}
+        });
 
-// Function to get repository statistics (can be used for other purposes)
-async function getRepoStats() {
-    try {
-        const res = await fetch('https://api.github.com/repos/Xchristech2/GAAJU-XMD');
-        if (!res.ok) throw new Error('Failed to fetch repository data');
-        return await res.json();
+        if (!res.ok) {
+            throw new Error(`GitHub API returned ${res.status}`);
+        }
+
+        const repo = await res.json();
+
+        const updated = repo.updated_at
+            ? new Date(repo.updated_at).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            })
+            : 'Unknown';
+
+        const txt = `╭━━〔 🐙 *GAAJU-XMD* 〕
+┃
+┃ ⤷ *Repository:* ${repo.name || 'GAAJU-XMD'}
+┃ ⤷ *Description:* ${repo.description || 'Multi-Device WhatsApp Bot'}
+┃ ⤷ *Language:* ${repo.language || 'JavaScript'}
+┃ ⤷ *Branch:* ${repo.default_branch || 'main'}
+┃ ⤷ *Stars:* ${repo.stargazers_count?.toLocaleString() || '0'} ⭐
+┃ ⤷ *Forks:* ${repo.forks_count?.toLocaleString() || '0'} 🔀
+┃ ⤷ *Issues:* ${repo.open_issues_count?.toLocaleString() || '0'} 🐛
+┃ ⤷ *Updated:* ${updated}
+┃
+╰━━━━━━━━━━━━━━
+
+╭━━〔 🔗 *LINKS* 〕
+┃
+┃ ⤷ *Repository:*
+┃ ${REPO_URL}
+┃
+┃ ⤷ *Deployment Tutorial:*
+┃ ${TUTORIAL_URL}
+┃
+╰━━━━━━━━━━━━━━`;
+
+        const imgPath = path.join(__dirname, '../assets/bot_image.jpg');
+
+        const contextInfo = {
+            forwardingScore: 1,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+                newsletterJid: '120363406588763460@newsletter',
+                newsletterName: 'Gᴀᴀᴊᴜ-Xᴍᴅ',
+                serverMessageId: -1
+            }
+        };
+
+        if (fs.existsSync(imgPath)) {
+            const imageBuffer = fs.readFileSync(imgPath);
+
+            await sock.sendMessage(
+                chatId,
+                {
+                    image: imageBuffer,
+                    caption: txt,
+                    contextInfo
+                },
+                { quoted: message }
+            );
+        } else {
+            await sock.sendMessage(
+                chatId,
+                {
+                    text: txt,
+                    contextInfo
+                },
+                { quoted: message }
+            );
+        }
+
+        console.log('✅ GAAJU-XMD GitHub info sent');
+
     } catch (error) {
-        console.error('Error fetching repo stats:', error);
-        return null;
+        console.error('❌ GitHub command error:', error);
+
+        await sock.sendMessage(
+            chatId,
+            {
+                text: `❌ *GITHUB ERROR*\n\nUnable to fetch the repository right now.\n\n🔗 ${REPO_URL}`
+            },
+            { quoted: message }
+        );
     }
 }
 
 module.exports = githubCommand;
-module.exports.getRepoStats = getRepoStats;
