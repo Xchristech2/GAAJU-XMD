@@ -586,7 +586,7 @@ function buildMenu(data) {
 
     const botName = settings.botName || 'GAAJU-XMD';
 
-    let version = String(settings.version || '1.0.0');
+    let version = String(settings.version || '3.0.5');
 
     if (!version.startsWith('v')) {
         version = `v${version}`;
