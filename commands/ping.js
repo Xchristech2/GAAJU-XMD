@@ -4,17 +4,9 @@ async function pingCommand(sock, chatId, message) {
 
         await sock.sendMessage(
             chatId,
-            { text: '🏓 *Pong!*' },
-            { quoted: message }
-        );
-
-        const ping = Date.now() - start;
-
-        await sock.sendMessage(
-            chatId,
             {
                 text: `╭─⌈ ⚡ *PONG* ⌋
-│ ⤷ ${ping}ms 〔█████████▒〕
+│ ⤷ ${Date.now() - start}ms 〔█████████▒〕
 ╰⊷`
             },
             { quoted: message }
