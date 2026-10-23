@@ -48,7 +48,7 @@ const settings = {
   maxStoreMessages: 20, 
   storeWriteInterval: 10000,
   description: "GAAJU-XMD ,A Multi-Device whatsapp user bot",
-  version: "1.0.0",
+  version: "3.0.5",
   updateZipUrl: "https://github.com/Xchristech2/GAAJU-XMD/archive/refs/heads/main.zip",
 };
 
