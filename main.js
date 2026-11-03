@@ -116,7 +116,7 @@ const {
     coinhelpCommand 
 } = require('./commands/coinflip');
 const { saveStatusCommand } = require('./commands/simplestatus');
-const { setBotNameCommand, setBotOwnerCommand, setOwnerNumberCommand,setYTChannelCommand,setPackNameCommand,setAuthorCommand, setTimezoneCommand,configHelpCommand } = require('./commands/Xchristech');
+const { setBotNameCommand, setBotOwnerCommand, setOwnerNumberCommand,setYTChannelCommand,setPackNameCommand,setAuthorCommand, setTimezoneCommand,configHelpCommand } = require('./commands/xchristech');
 const { checkUpdateCommand, updateInfoCommand, autoCheckUpdates } = require('./commands/checkupdate');
 const getppCommand = require('./commands/getpp');
 const { leaveCommand } = require('./commands/leave');
