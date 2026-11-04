@@ -19,18 +19,18 @@
 //* 
 //  * project_name : GAAJU-XMD
 //  * author : gaajutech
-//  * youtube : https://www.youtube.com/Xchristech
-//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot. 
+//  * youtube : https://www.youtube.com/Xchristech 
+//  * description : GAAJU-XMD ,A Multi-Device whatsapp user bot.
 //*
 //*
-//re-upload? recode? copy code? give credit to gaajutech 2025:)
+//re-upload? recode? copy code? give credit to gaajutech 2026:)
 //Instagram: gaajutech
 //Telegram: t.me/Official_ChrisGaaju
 //GitHub: Xchristech2 
-//WhatsApp: +2348144317152
+//WhatsApp: +2348069675806
 //want more free bot scripts? subscribe to my youtube channel: https://youtube.com/@Xchristech
 //   * Created By Github: Xchristech2.
-//   * Credit To ally jay tech
+//   * Credit To Chris Gaaju 
 //   * © 2025 GAAJU-XMD.
 // ⛥┌┤
 // */
@@ -146,8 +146,6 @@ const { autoStatusCommand, handleStatusUpdate, handleBulkStatusUpdate } = requir
 const { execute: antibotCommand, handleMessage: handleAntibotDetection } = require('./commands/antibot');
 const tagAllCommand = require('./commands/tagall');
 const helpCommand = require('./commands/help');
-const menuCommand = require('./commands/menu');
-const { handleMenuNumberReply } = require('./commands/menu');
 const banCommand = require('./commands/ban');
 const { promoteCommand } = require('./commands/promote');
 const { demoteCommand } = require('./commands/demote');
@@ -259,23 +257,6 @@ const codeCommand = require('./commands/code');
 const summariseCommand = require('./commands/summarise');
 const subscribeCommand = require('./commands/subscribe');
 const { setpremiumCommand, rmpremiumCommand, listpremiumCommand, checkplanCommand } = require('./commands/premium');
-const languageCommand = require('./commands/language');
-
-
-// ---- COMMAND ALIASES ----
-const commandAliases = {
-    'code': ['code', 'código', 'codice', 'код', 'كود', '代码', '코드', 'コード', 'कोड', 'کوڈ', 'কোড', 'koodu', 'kóòdù', 'kode', 'kod', 'mã', 'குறியீடு'],
-    'menu': ['menu', 'menü', 'menú', 'ndepụta', 'àtòjọ', 'القائمة', '菜单', 'मेनू', 'menú', 'меню', 'مینو', 'মেনু', 'menu', 'menù', 'menu', 'メニュー', 'menu', 'menü', '메뉴', 'thựcđơn', 'பட்டியல்'],
-    'language': ['language', 'sprache', 'harshe', 'asụsụ', 'èdè', 'langue', 'اللغة', '语言', 'भाषा', 'idioma', 'язык', 'زبان', 'ভাষা', 'langue', 'lingua', 'bahasa', '言語', 'lugha', 'dil', '언어', 'ngônngữ', 'மொழி']
-};
-
-function resolveCommand(input) {
-    const cmd = input.toLowerCase().replace(/^\./, '');
-    for (const [command, aliases] of Object.entries(commandAliases)) {
-        if (aliases.includes(cmd)) return command;
-    }
-    return cmd;
-}
 
 
 // Global settings
@@ -319,7 +300,7 @@ const channelInfo = {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363406588763460@newsletter',
-            newsletterName: 'GAAJU-XMD BOTS',
+            newsletterName: 'GAAJU-XMD',
             serverMessageId: -1
         }
     }
@@ -408,7 +389,7 @@ if (!isGroup && !isStatus && message.key.addressingMode === 'lid' && message.key
   
             if (buttonId === 'channel') {
                 await sock.sendMessage(chatId, { 
-                    text: '📢 *Join our Channel:*\nhttps://whatsapp.com/channel/0029VbBvGgyFsn0alyIDjw0z' 
+                    text: '📢 *Join our Channel:*\nhttps://whatsapp.com/channel/0029Vb64CFeHFxP6SQN1VY0I' 
                 }, { quoted: message });
                 return;
             } else if (buttonId === 'owner') {
@@ -417,27 +398,11 @@ if (!isGroup && !isStatus && message.key.addressingMode === 'lid' && message.key
                 return;
             } else if (buttonId === 'support') {
                 await sock.sendMessage(chatId, { 
-                    text: `🔗 *Support*\n\nhttps://chat.whatsapp.com/DXksVb4su2cHKxrmKktHQd?mode=wwt` 
+                    text: `🔗 *Support*\n\nhttps://chat.whatsapp.com/KWr561NJbHGGrT8YCSRibi?mode=wwt` 
                 }, { quoted: message });
                 return;
             }
         }
-// ================================================================
-// MENU NUMBER REPLY INTERCEPTOR
-// If user quote-replied a bot menu message with a number 1–15,
-// handle it here and skip the rest of the command pipeline.
-// ================================================================
-try {
-    const handled = await handleMenuNumberReply(sock, message, chatId);
-    if (handled) {
-        log('✅ Menu number reply handled');
-        return;
-    }
-} catch (e) {
-    log('⚠️ Menu number reply error:', e.message);
-}
-// ================================================================
-
 
         const rawMessageText = (
             message.message?.conversation?.trim() ||
@@ -481,25 +446,21 @@ if (!isCommand) {
     return;
 }
 
-  // If we get here, it's a command
-const rawText = commandWithoutPrefix;
-const resolvedCommand = resolveCommand(rawText);
-const args = rawText.replace(/^[^\s]*\s?/, '');
-const userMessage = '.' + resolvedCommand + (args ? ' ' + args : '');
+        // If we get here, it's a command
+        const userMessage = '.' + commandWithoutPrefix.toLowerCase().replace(/\.\s+/g, '.').trim();
+        const rawText = commandWithoutPrefix;
 
-// 🔥 COMMAND DEBUG
-log('═══════════════════════════════════════');
-log('🔧 COMMAND PARSED');
-log('├ userMessage:', userMessage);
-log('├ rawText:', rawText);
-log('├ resolvedCommand:', resolvedCommand);
-log('├ args:', args);
-log('├ chatId (for reply):', chatId);
-log('═══════════════════════════════════════');
+        // 🔥 COMMAND DEBUG
+        log('═══════════════════════════════════════');
+        log('🔧 COMMAND PARSED');
+        log('├ userMessage:', userMessage);
+        log('├ rawText:', rawText);
+        log('├ chatId (for reply):', chatId);
+        log('═══════════════════════════════════════');
 
-log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${resolvedCommand} (prefix: ${currentPrefix || 'none'})`);
+        log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${commandWithoutPrefix} (prefix: ${currentPrefix || 'none'})`);
 
-// Read bot mode once
+        // Read bot mode once
         let isPublic = true;
         try {
             const data = JSON.parse(fs.readFileSync('./data/messageCount.json'));
@@ -653,14 +614,10 @@ switch (true) {
                 }
                 await unbanCommand(sock, chatId, message);
                 break;
-            case userMessage === '.help' || userMessage === '.fullmenu' || userMessage === '.bot' || userMessage === '.list':
+            case userMessage === '.help' || userMessage === '.menu' || userMessage === '.bot' || userMessage === '.list':
                 await helpCommand(sock, chatId, message, global.channelLink);
                 commandExecuted = true;
                 break;
-        case userMessage === '.menu':
-    await menuCommand(sock, chatId, message, []);
-    commandExecuted = true;
-    break;
             case userMessage === '.sticker' || userMessage === '.s':
                 await stickerCommand(sock, chatId, message);
                 commandExecuted = true;
@@ -783,7 +740,7 @@ try {
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363406588763460@newsletter',
-                    newsletterName: 'GAAJU-XMD',
+                    newsletterName: 'GAAJU-XMD BOTS',
                     serverMessageId: -1
                 }
             }
@@ -1441,9 +1398,9 @@ case userMessage.startsWith('.autorecord'):
                 await stickerTelegramCommand(sock, chatId, message);
                 break;
 
-            case '.vv':
-    await viewOnceCommand(sock, chatId, message);
-    break;
+            case userMessage.startsWith('.vv'):
+                await viewOnceCommand(sock, chatId, message);
+                break;
             case userMessage === '.clearsession' || userMessage === '.clearsesi':
                 await clearSessionCommand(sock, chatId, message);
                 break;
@@ -1820,15 +1777,10 @@ case userMessage === '.listpremium':
     await listpremiumCommand(sock, chatId, message);
     commandExecuted = true;
     break;
-        case userMessage === '.language':
-case userMessage.startsWith('.language '):
-    await languageCommand(sock, chatId, message);
-    break;
 case userMessage.startsWith('.checkplan'):
     await checkplanCommand(sock, chatId, message);
     commandExecuted = true;
     break;
-        
                 default:
     if (userMessage && chatId !== 'status@broadcast') {
         await handleChatbotResponse(sock, chatId, message, userMessage, senderId);
