@@ -1,0 +1,5 @@
+{
+  "name": "WALLYJAYTECH-MD",
+  "image": "node:latest",
+  "postCreateCommand": "npm install"
+}
