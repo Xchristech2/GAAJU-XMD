@@ -39,7 +39,7 @@ function getDeploymentPlatform() {
 
 global.File = class File {};
 require('./settings');
-require('dotenv').config();
+require('.env').config();
 const { Boom } = require('@hapi/boom');
 const { handleMessages, handleGroupParticipantUpdate } = require('./main');
 
