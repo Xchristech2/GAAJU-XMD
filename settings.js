@@ -82,35 +82,38 @@
  * ============================================
  */
 
+require('dotenv').config();
+
 const settings = {
   // ========== BOT INFORMATION ==========
   packname: 'GAAJU-XMD',
   author: '‎Chris Gaaju',
   botName: "GAAJU-XMD",
   botOwner: 'Chris Gaaju',
-  description: "GAAJU-XMD ,A Multi-Device whatsapp user bot",
+  description: "GAAJU-XMD, A Multi-Device WhatsApp User Bot",
   version: "3.0.5",
-  
+
   // ========== BOT LANGUAGE ==========
-  // Change this to any language code from the table above
-  // Default: "en" (English)
-  botLanguage: "en",  // ← Change this to your preferred language code
-  
+  botLanguage: "en",
+
   // ========== BOT CONFIGURATION ==========
   timezone: 'Africa/Lagos',
   prefix: '.',
   ownerNumber: '2348069675806',
   commandMode: "private",
-  
+
   // ========== API KEYS ==========
   giphyApiKey: 'qnl7ssQChTdPjsKta2Ax2LMaGXz303tq',
-  
+
   // ========== STORAGE SETTINGS ==========
   maxStoreMessages: 20,
   storeWriteInterval: 10000,
-  
+
   // ========== UPDATE SETTINGS ==========
   updateZipUrl: "https://github.com/Xchristech2/GAAJU-XMD/archive/refs/heads/main.zip",
 };
+
+// ========== SESSION CONFIGURATION ==========
+global.sessionid = process.env.SESSION_ID || '';
 
 module.exports = settings;
